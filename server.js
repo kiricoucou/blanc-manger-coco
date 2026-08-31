@@ -25,6 +25,38 @@ const logRetention = require('./server/logRetention');
 const PORT = process.env.PORT || 1563;
 
 const app = express();
+app.disable('x-powered-by'); // ne pas annoncer "Express" (facilite le fingerprinting d'un attaquant)
+
+// En-tetes de securite HTTP (equivalent maison a helmet, sans dependance
+// supplementaire) : durcit contre le clickjacking, le MIME-sniffing, et
+// limite ce qu'un script injecte via une faille XSS pourrait charger/appeler.
+// CSP construite a partir des seules ressources externes reellement chargees
+// par l'app (Google Fonts, jsDelivr pour vanilla-tilt, /socket.io en meme
+// origine) : verifier la console navigateur apres deploiement si une
+// nouvelle ressource externe est ajoutee plus tard (elle serait bloquee ici
+// en premier, pas de mystere silencieux).
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' https://cdn.jsdelivr.net",
+    "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data:",
+    "connect-src 'self'",
+    "media-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join('; '));
+  next();
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   pingTimeout: 20000,

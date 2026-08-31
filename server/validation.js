@@ -76,7 +76,35 @@ function isValidAnswerText(raw, max) {
   return clean.length > 0 && clean.length <= limit;
 }
 
+// Domaines des vrais services de push connus des navigateurs. Un abonnement
+// push est cree cote client par le navigateur (jamais tape a la main par un
+// utilisateur normal), mais rien n'empeche un client modifie d'envoyer une
+// URL arbitraire au serveur -- sans cette whitelist, le serveur ferait une
+// requete HTTP sortante (webpush.sendNotification) vers n'importe quelle URL
+// fournie par le joueur, y compris des adresses internes a l'hebergeur
+// (SSRF, ex. metadonnees cloud). On ne fait confiance qu'a une URL https
+// dont l'hote appartient a un service de push reconnu.
+const PUSH_ENDPOINT_HOST_SUFFIXES = [
+  '.googleapis.com',        // Chrome/Edge/Firefox via FCM
+  '.push.services.mozilla.com', // Firefox
+  '.notify.windows.com',    // Edge/Windows (WNS)
+  '.push.apple.com',        // Safari (APNs web push)
+];
+
+function isValidPushEndpoint(raw) {
+  if (typeof raw !== 'string' || raw.length > 512) return false;
+  let url;
+  try {
+    url = new URL(raw);
+  } catch (e) {
+    return false;
+  }
+  if (url.protocol !== 'https:') return false;
+  return PUSH_ENDPOINT_HOST_SUFFIXES.some((suffix) => url.hostname.endsWith(suffix));
+}
+
 module.exports = {
+  isValidPushEndpoint,
   NICKNAME_MAX,
   ANSWER_MAX,
   VALID_AVATARS,

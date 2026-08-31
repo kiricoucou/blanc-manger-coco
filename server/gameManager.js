@@ -150,6 +150,7 @@ const {
   isValidCardChangesMax,
   isValidAnswerText,
   cleanAnswerText,
+  isValidPushEndpoint,
   MIN_PLAYERS,
   MAX_PLAYERS,
 } = require('./validation');
@@ -833,7 +834,7 @@ function pushSubscribe(socket, payload, ack) {
   const player = game.getPlayer(socket.data.playerId);
   if (!player) return ack({ ok: false, error: 'Joueur introuvable.' });
   const sub = payload && payload.subscription;
-  if (!sub || typeof sub.endpoint !== 'string') return ack({ ok: false, error: 'Abonnement invalide.' });
+  if (!sub || !isValidPushEndpoint(sub.endpoint)) return ack({ ok: false, error: 'Abonnement invalide.' });
   player.pushSubscription = sub;
   ack({ ok: true });
 }
