@@ -7,69 +7,163 @@
 <link rel="icon" href="assets/brand/logo.png" />
 <link rel="stylesheet" href="style.css" />
 <style>
-  body { background: var(--bg, #0c0a0d); }
+  body { background: var(--bg, #0c0a0d); overflow-x: hidden; }
+
   .legal-wrap {
-    max-width: 760px;
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
     margin: 0 auto;
     padding: 32px 20px 80px;
     color: var(--text-0, #f2eef2);
     font-family: 'Epilogue', sans-serif;
-    line-height: 1.6;
+    line-height: 1.65;
   }
   .legal-wrap a { color: var(--pink, #ff5c8a); }
-  .legal-wrap h1 { font-size: 1.6rem; margin-bottom: 4px; }
-  .legal-wrap h2 { font-size: 1.25rem; margin-top: 40px; border-bottom: 2px solid rgba(255,255,255,0.12); padding-bottom: 6px; }
-  .legal-wrap h3 { font-size: 1.02rem; margin-top: 22px; }
-  .legal-wrap p, .legal-wrap li { color: var(--text-1, #cfc7d1); font-size: 0.95rem; }
+  .legal-wrap h1 { font-size: 1.7rem; margin-bottom: 4px; }
+  .legal-wrap h2 {
+    font-size: 1.3rem;
+    margin-top: 46px;
+    padding: 10px 14px;
+    background: var(--surface, #1a1620);
+    border-left: 4px solid var(--pink, #ff5c8a);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: legal-fade-up 0.5s ease both;
+  }
+  .legal-wrap h3 { font-size: 1.05rem; margin-top: 26px; color: var(--text-0); }
+  .legal-wrap p, .legal-wrap li { color: var(--text-1, #cfc7d1); font-size: 0.96rem; }
+  .legal-wrap ul, .legal-wrap ol { padding-left: 22px; margin: 10px 0; }
+  .legal-wrap li { margin-bottom: 8px; }
   .legal-updated { color: var(--text-2, #9a8fa0); font-size: 0.85rem; margin-bottom: 24px; }
-  .legal-toc { background: var(--surface, #1a1620); border-radius: 12px; padding: 14px 18px; margin: 20px 0 32px; }
-  .legal-toc a { display: block; padding: 3px 0; }
-  .legal-back { display: inline-block; margin-bottom: 18px; font-weight: 700; }
+  .legal-toc { background: var(--surface, #1a1620); border-radius: 14px; padding: 18px; margin: 20px 0 32px; }
+  .legal-toc-title { margin: 0 0 12px; }
+  .legal-toc-grid { display: flex; flex-direction: column; gap: 10px; }
+  .legal-toc-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .legal-toc-btn:hover { transform: translateY(-3px) scale(1.02); }
+  .legal-back-btn { margin-bottom: 18px; }
+  .legal-back-btn-bottom { margin-top: 36px; }
   .legal-placeholder { color: #ffcf5c; font-weight: 700; }
-  section { margin-bottom: 8px; }
+  section { margin-bottom: 8px; animation: legal-fade-up 0.6s ease both; }
+
+  /* Mots-cles : gras + rouge, demande explicitement pour capter l'attention
+     sur les points qui comptent vraiment (age, responsabilite, securite). */
+  .hl { color: #ff4d5e; font-weight: 800; }
+  .ul { text-decoration: underline; text-decoration-color: var(--gold, #ffcf5c); text-decoration-thickness: 2px; text-underline-offset: 3px; font-weight: 700; }
+
+  .legal-callout {
+    background: rgba(255, 77, 94, 0.08);
+    border: 2px solid rgba(255, 77, 94, 0.35);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 16px 0;
+  }
+  .legal-callout-title { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; margin-bottom: 8px; color: var(--text-0); }
+
+  .legal-outro {
+    margin-top: 48px;
+    padding: 20px;
+    background: var(--surface, #1a1620);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .legal-outro h2 { justify-content: center; border-left: none; background: none; }
+
+  @keyframes legal-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
+<div id="bg-fx" aria-hidden="true"></div>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
 <div class="legal-wrap">
-  <a class="legal-back" href="/">← Retour au jeu</a>
-  <h1>Ça va mal finir</h1>
-  <p class="legal-updated">Charte d'utilisation &amp; Conditions Générales d'Utilisation — version du 31/08/2026</p>
+  <a class="btn btn-secondary legal-back-btn" href="/">← Retour au jeu</a>
+  <h1>🃏 Ça va mal finir</h1>
+  <p class="legal-updated">Charte d'utilisation, CGU &amp; politique de confidentialité — version du 31/08/2026</p>
 
   <div class="legal-toc">
-    <strong>Sommaire</strong>
-    <a href="#charte">1. Charte d'utilisation</a>
-    <a href="#cgu">2. Conditions Générales d'Utilisation (CGU)</a>
-    <a href="#confidentialite">3. Politique de confidentialité</a>
+    <strong class="legal-toc-title">📑 Sommaire</strong>
+    <div class="legal-toc-grid">
+      <a class="btn btn-secondary legal-toc-btn" href="#esprit">🎉 1. L'esprit du jeu</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#pas">🚫 2. Ce que le jeu n'est pas</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#responsabilite">🙋 3. La responsabilité de chacun</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#mineurs">🔞 4. Âge, mineurs &amp; contenu adulte</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#cgu">📜 5. Conditions Générales d'Utilisation</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#confidentialite">🔒 6. Vie privée &amp; RGPD</a>
+      <a class="btn btn-secondary legal-toc-btn" href="#outro">💬 7. Pour finir</a>
+    </div>
   </div>
 
-  <section id="charte">
-  <h2>1. Charte d'utilisation</h2>
+  <section id="esprit">
+  <h2>1. 🎉 L'esprit du jeu</h2>
+  <p><strong>« Ça va mal finir »</strong> est un jeu de société numérique à jouer <span class="ul">entre amis ou en soirée</span>, dont le seul but est de <span class="hl">faire rire</span> et de créer un moment convivial. Le principe repose sur l'humour — y compris l'humour <strong>noir</strong>, absurde ou provocateur — et sur le <span class="ul">second degré</span> assumé par tous les participants.</p>
+  <ul>
+    <li>🎭 Les cartes, les réponses inventées par les joueurs et les situations imaginées pendant une partie sont des <strong>éléments de jeu fictifs</strong>.</li>
+    <li>🚫 Elles n'expriment <span class="hl">ni les opinions, ni les valeurs, ni les intentions réelles</span> de l'éditeur ni des joueurs qui les utilisent dans le cadre du jeu.</li>
+    <li>🤐 <strong>Ce qui se passe dans la partie reste dans la partie.</strong> En rejoignant une partie, chaque participant reconnaît le caractère volontairement exagéré de certains contenus, et s'engage à les recevoir avec le recul nécessaire, dans le seul esprit du divertissement.</li>
+  </ul>
+  </section>
 
-  <h3>1.1 Esprit du jeu</h3>
-  <p>« Ça va mal finir » est un jeu de société numérique, à jouer entre amis ou en soirée, dont le seul but est de faire rire et de créer un moment convivial. Le principe du jeu repose sur l'humour, y compris l'humour noir, absurde ou provocateur, et sur le second degré assumé par tous les participants. Les cartes proposées, les réponses inventées par les joueurs et les situations imaginées pendant une partie sont des éléments de jeu fictifs : elles n'expriment ni les opinions, ni les valeurs, ni les intentions réelles de l'éditeur de l'application, ni celles des joueurs qui les utilisent dans le cadre du jeu.</p>
-  <p><strong>Ce qui se passe dans la partie reste dans la partie.</strong> En rejoignant une partie, chaque participant reconnaît et accepte le caractère volontairement exagéré, satirique ou provocateur de certains contenus, et s'engage à les recevoir avec le recul nécessaire, dans le seul esprit du divertissement.</p>
+  <section id="pas">
+  <h2>2. 🚫 Ce que le jeu n'est <em>pas</em></h2>
+  <p>L'application n'a <span class="hl">pas</span> pour objet, et ne doit <span class="hl">en aucun cas</span> être utilisée pour :</p>
+  <ul>
+    <li>😈 Tenir des propos de <strong>harcèlement</strong>, d'intimidation ou de dénigrement envers une personne réelle en dehors du cadre fictif et consenti de la partie ;</li>
+    <li>🗣️ Diffuser un <strong>discours de haine</strong>, une incitation à la violence, ou l'apologie de comportements illégaux ;</li>
+    <li>🔞 Diffuser tout contenu à caractère pédopornographique — <span class="hl">strictement et absolument interdit</span>, sans aucune exception ;</li>
+    <li>🕵️ Porter atteinte à la <strong>dignité</strong>, à la réputation ou à la vie privée d'un tiers ;</li>
+    <li>📢 Se livrer à une quelconque forme de <strong>propagande politique, religieuse ou idéologique</strong>.</li>
+  </ul>
+  <div class="legal-callout">
+    <div class="legal-callout-title">⚠️ En clair</div>
+    <p>Toute utilisation détournée de ce type est <span class="ul">strictement contraire à l'objet du jeu</span>, engage la seule responsabilité de son auteur, et peut entraîner une exclusion immédiate ainsi qu'un signalement aux autorités compétentes.</p>
+  </div>
+  </section>
 
-  <h3>1.2 Ce que le jeu n'est pas</h3>
-  <p>L'application n'a pas pour objet, et ne doit en aucun cas être utilisée pour : tenir des propos de harcèlement, d'intimidation ou de dénigrement envers une personne réelle en dehors du cadre fictif et consenti de la partie ; diffuser un discours de haine, une incitation à la violence, une apologie de comportements illégaux, ou du contenu à caractère pédopornographique ; porter atteinte à la dignité, à la réputation ou à la vie privée d'un tiers ; se livrer à une quelconque forme de propagande politique, religieuse ou idéologique. Toute utilisation détournée de ce type est strictement contraire à l'objet du jeu, engage la seule responsabilité de son auteur, et peut entraîner une exclusion immédiate ainsi que, le cas échéant, un signalement aux autorités compétentes.</p>
+  <section id="responsabilite">
+  <h2>3. 🙋 La responsabilité de chacun</h2>
+  <ul>
+    <li>✍️ Chaque joueur reste <strong>seul responsable</strong> des réponses, messages et contenus qu'il rédige librement pendant une partie.</li>
+    <li>🎯 Il lui appartient d'<strong>adapter son humour</strong> et son degré de provocation au contexte réel de sa partie (âge, sensibilité et consentement des autres participants).</li>
+    <li>🧠 Faire preuve de <span class="ul">discernement</span> à tout moment reste la règle numéro un.</li>
+    <li>👤 L'éditeur ne rédige, ne valide et ne contrôle <strong>pas en temps réel</strong> le contenu librement saisi par les joueurs, et ne saurait donc être tenu responsable des propos échangés entre joueurs — sous réserve des dispositions de la section « Responsabilité » des CGU ci-dessous.</li>
+  </ul>
+  </section>
 
-  <h3>1.3 Responsabilité de chaque joueur</h3>
-  <p>Chaque joueur reste seul responsable des réponses, messages et contenus qu'il rédige librement pendant une partie (réponses aux cartes, messages de discussion, cartes proposées à la communauté). Il lui appartient d'adapter son humour et son degré de provocation au contexte réel de sa partie (l'âge, la sensibilité et le consentement des autres participants), et de faire preuve de discernement à tout moment. L'éditeur de l'application ne rédige, ne valide et ne contrôle pas en temps réel le contenu librement saisi par les joueurs, et ne saurait en conséquence être tenu responsable des propos échangés entre joueurs au cours d'une partie, sous réserve des dispositions de la section « Responsabilité » des CGU ci-dessous.</p>
-
-  <h3>1.4 Contenu réservé aux personnes majeures</h3>
-  <p>Certains lots de cartes (« packs »), identifiés comme tels dans l'application (mention « -18 » / « 🔞 »), contiennent un humour à caractère explicite, cru ou suggestif réservé à un public averti et majeur. Ce contenu se limite volontairement à du texte : l'application ne diffuse aucune image, vidéo ou contenu à caractère pornographique. L'activation de ces packs nécessite, à chaque fois, une action volontaire et explicite de la part de l'utilisateur qui les active, comprenant la certification sur l'honneur qu'il est âgé d'au moins 18 ans.</p>
-  <p>Aucune vérification d'identité ou de pièce justificative n'est effectuée : le système repose intégralement sur une déclaration sur l'honneur de l'utilisateur. En conséquence, toute personne mineure qui activerait ce contenu en affirmant faussement être majeure engage sa seule responsabilité (et, le cas échéant, celle de son représentant légal) ; l'éditeur de l'application ne saurait être tenu pour responsable d'une fausse déclaration d'âge de la part d'un utilisateur, dans les limites permises par la loi applicable.</p>
-
-  <h3>1.5 Acceptation</h3>
-  <p>L'utilisation de l'application, sous quelque forme que ce soit (création ou participation à une partie, connexion, création de compte), vaut acceptation pleine, entière et sans réserve de la présente Charte d'utilisation, ainsi que des Conditions Générales d'Utilisation ci-dessous. Un utilisateur qui refuse ces conditions doit cesser immédiatement toute utilisation de l'application.</p>
+  <section id="mineurs">
+  <h2>4. 🔞 Âge, mineurs &amp; contenu adulte</h2>
+  <p>Le jeu, dans sa configuration <strong>par défaut</strong>, reste accessible à un large public. Mais certains lots de cartes (« packs »), identifiés comme tels dans l'application (mention <span class="hl">« -18 » / « 🔞 »</span>), contiennent un humour explicite, cru ou suggestif, réservé à un public <span class="ul">averti et majeur</span>.</p>
+  <ul>
+    <li>📝 Ce contenu se limite <strong>volontairement au texte</strong> : aucune image, vidéo ou contenu à caractère pornographique n'est diffusé.</li>
+    <li>✅ L'activation d'un pack adulte nécessite, <strong>à chaque fois</strong>, une action volontaire et explicite : cocher une case certifiant sur l'honneur avoir <span class="hl">18 ans ou plus</span>.</li>
+    <li>🎂 La création d'un compte joueur nécessite de même une certification sur l'honneur d'avoir <span class="hl">15 ans ou plus</span> (majorité numérique fixée par la loi française).</li>
+    <li>🔍 <span class="ul">Aucune vérification d'identité</span> n'est effectuée : le système repose intégralement sur la déclaration de l'utilisateur.</li>
+  </ul>
+  <div class="legal-callout">
+    <div class="legal-callout-title">⚠️ Conséquence d'une fausse déclaration</div>
+    <p>Toute personne mineure qui activerait ce contenu en affirmant <strong>faussement</strong> être majeure engage <span class="hl">sa seule responsabilité</span> (et, le cas échéant, celle de son représentant légal). L'éditeur ne saurait être tenu pour responsable d'une fausse déclaration d'âge de la part d'un utilisateur, dans les limites permises par la loi applicable.</p>
+  </div>
+  <p>L'utilisation de l'application, sous quelque forme que ce soit (partie, connexion, compte), vaut <strong>acceptation pleine, entière et sans réserve</strong> de la présente Charte et des CGU ci-dessous. Un utilisateur qui refuse doit cesser immédiatement toute utilisation.</p>
   </section>
 
   <section id="cgu">
-  <h2>2. Conditions Générales d'Utilisation (CGU)</h2>
+  <h2>5. 📜 Conditions Générales d'Utilisation (CGU)</h2>
 
-  <h3>2.1 Objet</h3>
-  <p>Les présentes CGU ont pour objet de définir les modalités et conditions dans lesquelles l'éditeur met à disposition l'application « Ça va mal finir » (ci-après « le Service »), ainsi que les droits et obligations des parties dans ce cadre. Elles s'appliquent à tout utilisateur du Service (ci-après « l'Utilisateur »), y compris les utilisateurs non-inscrits participant à une partie via un simple pseudonyme.</p>
+  <h3>5.1 Objet</h3>
+  <p>Les présentes CGU définissent les modalités et conditions dans lesquelles l'éditeur met à disposition l'application <strong>« Ça va mal finir »</strong> (ci-après « le Service »), ainsi que les droits et obligations des parties. Elles s'appliquent à tout utilisateur du Service (« l'Utilisateur »), y compris les utilisateurs non-inscrits participant via un simple pseudonyme.</p>
 
-  <h3>2.2 Éditeur du Service</h3>
+  <h3>5.2 Éditeur du Service</h3>
   <p>
     <span class="legal-placeholder">[À COMPLÉTER AVANT MISE EN LIGNE PUBLIQUE]</span><br>
     Nom / raison sociale de l'éditeur : ……………………<br>
@@ -80,93 +174,81 @@
   </p>
   <p>
     Hébergeur : Replit, Inc. — 767 Bryant St, San Francisco, CA 94107, États-Unis — <a href="https://replit.com/site/terms" target="_blank" rel="noopener">replit.com/site/terms</a>.
-    <span class="legal-placeholder">Vérifie l'adresse exacte et la dénomination sociale actuelles sur la page officielle de Replit avant publication</span>, ces informations pouvant évoluer indépendamment de ce document.
+    <span class="legal-placeholder">Vérifie l'adresse exacte et la dénomination sociale actuelles sur la page officielle de Replit avant publication</span>.
   </p>
-  <p>Ces informations (« mentions légales ») sont obligatoires en droit français (article 6-III de la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique) dès lors que le Service est accessible publiquement, a fortiori s'il génère des revenus. Elles doivent être renseignées avant toute mise en ligne commerciale.</p>
+  <p>Ces informations (« mentions légales ») sont <span class="hl">obligatoires en droit français</span> (article 6-III de la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique) dès lors que le Service est accessible publiquement, <span class="ul">a fortiori s'il génère des revenus</span>.</p>
 
-  <h3>2.3 Accès au Service et acceptation</h3>
-  <p>Le Service est accessible via un navigateur web, sans installation obligatoire. L'accès peut nécessiter la création d'une partie ou la saisie d'un code de partie, ainsi que le choix d'un pseudonyme. L'utilisation du Service, dès la première connexion, est subordonnée à l'acceptation intégrale des présentes CGU et de la Charte d'utilisation, matérialisée par une case à cocher explicite affichée avant tout accès aux fonctionnalités du Service. Un Utilisateur qui n'accepte pas ces conditions ne doit pas utiliser le Service.</p>
+  <h3>5.3 Accès et acceptation</h3>
+  <p>Le Service est accessible via un navigateur web, sans installation obligatoire. L'utilisation du Service, dès la première connexion, est subordonnée à l'acceptation intégrale des présentes CGU et de la Charte, matérialisée par une case à cocher explicite affichée avant tout accès aux fonctionnalités du Service.</p>
 
-  <h3>2.4 Description du Service</h3>
-  <p>Le Service est un jeu de cartes multijoueur en ligne, en temps réel, de type « complète la carte », à but exclusivement ludique et humoristique. Il propose un mode de jeu classique (parties entre plusieurs joueurs via un code de partie) ainsi qu'un mode de découverte/tutoriel joué contre des joueurs simulés (« bots »). Certaines fonctionnalités optionnelles (compte utilisateur persistant, statistiques, liste d'amis) peuvent être proposées sans être indispensables à l'usage principal du Service.</p>
+  <h3>5.4 Description du Service</h3>
+  <p>Jeu de cartes multijoueur en ligne, en temps réel, de type « complète la carte », à but exclusivement ludique et humoristique. Mode de jeu classique (via code de partie) ainsi qu'un mode tutoriel joué contre des joueurs simulés (« bots »). Fonctionnalités optionnelles : compte utilisateur persistant, statistiques, liste d'amis.</p>
 
-  <h3>2.5 Âge et capacité des Utilisateurs</h3>
-  <p>Le Service, dans sa configuration par défaut (hors packs de cartes réservés aux adultes), est accessible à toute personne disposant de la capacité de conclure un contrat en ligne selon la loi applicable, y compris les mineurs sous réserve de l'autorisation de leur représentant légal lorsque celle-ci est requise. L'accès aux packs de cartes réservés aux adultes est en revanche strictement réservé aux personnes majeures, dans les conditions décrites à l'article 1.4 de la Charte d'utilisation ci-dessus, à laquelle il est expressément renvoyé.</p>
+  <h3>5.5 Comportement de l'Utilisateur</h3>
+  <p>L'Utilisateur s'engage à utiliser le Service conformément à la Charte (sections 1 à 4 ci-dessus) et dans le respect de la loi. Tout manquement peut entraîner une exclusion, un bannissement, et un signalement aux autorités compétentes.</p>
 
-  <h3>2.6 Comportement de l'Utilisateur</h3>
-  <p>L'Utilisateur s'engage à utiliser le Service conformément à la Charte d'utilisation (section 1 ci-dessus), à sa destination ludique, et dans le respect de la loi. Il s'interdit notamment de porter atteinte à l'ordre public et aux bonnes mœurs, aux droits de tiers (vie privée, image, propriété intellectuelle), et de commettre, par le biais du Service, tout acte de harcèlement, de diffamation, d'injure ou d'incitation à la haine envers une personne réelle. Tout manquement peut entraîner une exclusion de la partie, un bannissement du Service, et, le cas échéant, un signalement aux autorités compétentes ainsi que la conservation des données techniques nécessaires à l'identification de l'auteur des faits, dans les conditions prévues par la loi.</p>
+  <h3>5.6 Contenu généré par les Utilisateurs</h3>
+  <p>Certaines fonctionnalités permettent de proposer des cartes (deck communautaire), sous réserve de validation par un modérateur. L'Utilisateur qui soumet une carte garantit en être l'auteur et concède à l'éditeur le droit de la diffuser au sein du Service.</p>
 
-  <h3>2.7 Contenu généré par les Utilisateurs</h3>
-  <p>Certaines fonctionnalités permettent aux Utilisateurs de proposer eux-mêmes des cartes (deck communautaire), sous réserve de validation par un modérateur avant intégration au Service. L'Utilisateur qui soumet une carte garantit qu'il en est l'auteur ou dispose des droits nécessaires, et concède à l'éditeur le droit de la reproduire et de la diffuser au sein du Service. L'éditeur se réserve le droit de refuser, modifier ou retirer à tout moment tout contenu proposé par un Utilisateur, sans avoir à en justifier le motif, notamment en cas de non-conformité à la Charte d'utilisation.</p>
+  <h3>5.7 Comptes utilisateurs</h3>
+  <ul>
+    <li>Facultatif, réservé aux <strong>15 ans et plus</strong> (voir section 4).</li>
+    <li>Mot de passe <span class="ul">haché</span>, jamais stocké en clair.</li>
+    <li>🗑️ Droit à l'effacement : bouton <strong>« Supprimer mon compte définitivement »</strong> accessible depuis le profil, à tout moment.</li>
+  </ul>
 
-  <h3>2.8 Comptes utilisateurs</h3>
-  <p>La création d'un compte est facultative et réservée aux personnes âgées d'au moins 15 ans (majorité numérique fixée par la loi française pour consentir seul au traitement de ses données), certifiée sur l'honneur lors de l'inscription. Elle nécessite un nom d'utilisateur et un mot de passe (stocké de façon sécurisée, jamais en clair). L'Utilisateur est seul responsable de la confidentialité de ses identifiants et de toute utilisation faite de son compte. Le compte est personnel et ne peut être cédé à un tiers. Tout Utilisateur peut à tout moment supprimer définitivement son compte et les données associées depuis son profil (voir article 3.9).</p>
+  <h3>5.8 Propriété intellectuelle</h3>
+  <p>Nom, logo, charte graphique, textes des cartes (hors contenu communautaire) et code source sont protégés et demeurent la propriété exclusive de l'éditeur ou de ses concédants.</p>
 
-  <h3>2.9 Propriété intellectuelle</h3>
-  <p>L'ensemble des éléments du Service (nom, logo, charte graphique, textes des cartes à l'exception du contenu communautaire, code source) est protégé par le droit de la propriété intellectuelle et demeure la propriété exclusive de l'éditeur ou de ses concédants. Toute reproduction, représentation ou exploitation non autorisée, totale ou partielle, est interdite.</p>
+  <h3>5.9 Responsabilité et limitation de responsabilité</h3>
+  <p>Le Service est fourni « en l'état ». L'éditeur n'est ni auteur, ni éditeur du contenu librement saisi par les Utilisateurs : ce contenu relève de la seule responsabilité de son auteur. L'éditeur agit en qualité d'<strong>hébergeur technique</strong> au sens de la loi n°2004-575, et retire tout contenu manifestement illicite dont il aurait connaissance (signalement intégré au Service).</p>
+  <p>L'éditeur ne saurait être tenu responsable des dommages résultant : d'un usage non conforme à la destination ludique du Service ; d'un <span class="hl">débordement survenu en dehors du Service</span> ; d'une fausse déclaration d'âge ; d'une interruption ou perte de données. Rien dans cette clause n'exclut la responsabilité de l'éditeur dans les cas où celle-ci ne peut être limitée en vertu d'une disposition d'ordre public.</p>
 
-  <h3>2.10 Responsabilité et limitation de responsabilité</h3>
-  <p>Le Service est fourni « en l'état ». L'éditeur met en œuvre les moyens raisonnables pour assurer un accès continu et sécurisé au Service, sans garantir une disponibilité ininterrompue ni l'absence totale d'erreurs.</p>
-  <p>L'éditeur n'est ni auteur, ni éditeur, ni à l'origine du contenu librement saisi par les Utilisateurs au cours d'une partie (réponses aux cartes, messages, cartes communautaires) : ce contenu relève de la seule responsabilité de son auteur, conformément à l'article 1.3 de la Charte d'utilisation. L'éditeur agit, s'agissant de ce contenu, en qualité d'hébergeur technique au sens de la loi n°2004-575 du 21 juin 2004, et retire ou rend inaccessible tout contenu manifestement illicite dont il aurait connaissance, notamment via la fonctionnalité de signalement intégrée au Service.</p>
-  <p>De manière générale, l'éditeur ne saurait être tenu responsable des dommages directs ou indirects résultant : d'un usage du Service non conforme à sa destination ludique et humoristique telle que définie par la Charte d'utilisation ; d'un débordement, d'un conflit ou d'un préjudice survenu en dehors du Service, y compris en conséquence d'un échange ayant eu lieu pendant une partie ; d'une fausse déclaration d'âge d'un Utilisateur lors de l'activation d'un contenu réservé aux adultes ; d'une interruption, d'un dysfonctionnement ou d'une perte de données liés au Service. Rien dans la présente clause n'a pour effet d'exclure la responsabilité de l'éditeur dans les cas où celle-ci ne peut être limitée en vertu d'une disposition d'ordre public.</p>
-
-  <h3>2.11 Modération et sanctions</h3>
-  <p>L'éditeur se réserve le droit, à sa seule discrétion et sans préavis, de suspendre ou de bannir tout Utilisateur dont le comportement contreviendrait à la Charte d'utilisation ou aux présentes CGU, de retirer tout contenu inapproprié, et d'exclure un joueur d'une partie en cours en cas d'abus.</p>
-
-  <h3>2.12 Données personnelles</h3>
-  <p>Le Service traite certaines données à caractère personnel dans le respect du Règlement Général sur la Protection des Données (RGPD). Le détail de ces traitements et des droits associés fait l'objet de la Politique de confidentialité ci-dessous (section 3), qui fait partie intégrante des présentes CGU.</p>
-
-  <h3>2.13 Évolution du Service et des CGU</h3>
-  <p>L'éditeur se réserve le droit de faire évoluer le Service ainsi que les présentes CGU et la Charte d'utilisation à tout moment, notamment pour se conformer à toute évolution législative, réglementaire ou technique. La version applicable est celle en vigueur au moment de l'utilisation du Service, identifiée par sa date de mise à jour en haut de la présente page ; toute modification substantielle donnera lieu à une nouvelle demande d'acceptation explicite auprès des Utilisateurs.</p>
-
-  <h3>2.14 Droit applicable et litiges</h3>
-  <p>Les présentes CGU et la Charte d'utilisation sont soumises au droit français. En cas de litige, une solution amiable sera recherchée en priorité avant toute action judiciaire. À défaut, les tribunaux français compétents seront seuls saisis, sous réserve des règles impératives applicables aux consommateurs.</p>
-
-  <h3>2.15 Contact</h3>
-  <p>Pour toute question relative aux présentes CGU, à la Charte d'utilisation, ou pour tout signalement, l'Utilisateur peut contacter l'éditeur à l'adresse indiquée à l'article 2.2.</p>
+  <h3>5.10 Modération, droit applicable, contact</h3>
+  <p>L'éditeur peut suspendre ou bannir tout Utilisateur contrevenant, à sa seule discrétion. Les présentes sont soumises au <strong>droit français</strong> ; les tribunaux français compétents seront seuls saisis en cas de litige, sous réserve des règles impératives applicables aux consommateurs. Contact : voir section 5.2.</p>
   </section>
 
   <section id="confidentialite">
-  <h2>3. Politique de confidentialité</h2>
+  <h2>6. 🔒 Vie privée &amp; RGPD</h2>
 
-  <h3>3.1 Responsable du traitement</h3>
-  <p>Le responsable du traitement des données à caractère personnel décrites ci-dessous est l'éditeur du Service, dont l'identité et les coordonnées figurent à l'article 2.2 des présentes.</p>
-
-  <h3>3.2 Données collectées</h3>
+  <h3>6.1 Données collectées</h3>
   <ul>
-    <li><strong>Pseudonyme de partie</strong> — saisi librement à chaque participation, non vérifié.</li>
-    <li><strong>Compte utilisateur (facultatif)</strong> — nom d'utilisateur et mot de passe (celui-ci n'est jamais stocké en clair : il est haché et salé avant tout enregistrement).</li>
-    <li><strong>Adresse IP</strong> — collectée automatiquement à la connexion et à certaines actions (création/jonction de partie).</li>
-    <li><strong>Journal technique d'activité</strong> — horodatage de certaines actions (création de partie, connexion), associé au pseudonyme et à l'adresse IP.</li>
+    <li>👤 <strong>Pseudonyme</strong> de partie — saisi librement, non vérifié.</li>
+    <li>🔑 <strong>Compte (facultatif)</strong> — nom d'utilisateur + mot de passe haché.</li>
+    <li>📡 <strong>Adresse IP</strong> — à la connexion et à certaines actions.</li>
+    <li>🕓 <strong>Journal technique</strong> — horodatage de certaines actions.</li>
   </ul>
-  <p>Le Service ne collecte <strong>aucune</strong> donnée bancaire, aucune pièce d'identité, et ne demande aucune adresse e-mail pour l'usage courant du jeu.</p>
+  <p>Le Service ne collecte <span class="hl">aucune donnée bancaire</span>, aucune pièce d'identité, et ne demande <span class="hl">aucun e-mail</span> pour l'usage courant du jeu.</p>
 
-  <h3>3.3 Finalité du traitement — pourquoi ces données sont collectées</h3>
-  <p><strong>Ces données sont collectées et conservées exclusivement à des fins de sécurité et de bon fonctionnement du Service :</strong> détecter et empêcher les tentatives d'intrusion, d'injection (notamment injection SQL), de piratage, de triche, de contournement d'un bannissement, de spam ou d'usage abusif automatisé (bots malveillants), et permettre la modération en cas de signalement d'un contenu ou d'un comportement contraire à la Charte d'utilisation.</p>
-  <p>L'éditeur s'engage explicitement à <strong>ne jamais exploiter, revendre, louer, croiser à des fins publicitaires, ou transmettre à un tiers</strong> ces données en dehors des cas prévus par la loi (réquisition judiciaire). Le Service ne fait l'objet d'aucun profilage commercial ni d'aucune monétisation des données personnelles des Utilisateurs : l'objectif du Service reste exclusivement ludique et bienveillant.</p>
-  <p>La base légale de ce traitement est l'intérêt légitime de l'éditeur à assurer la sécurité, l'intégrité et le bon fonctionnement du Service (article 6.1.f du RGPD), ainsi que, pour la création d'un compte, l'exécution du contrat formé par l'acceptation des présentes CGU.</p>
+  <h3>6.2 Pourquoi ces données sont collectées</h3>
+  <div class="legal-callout">
+    <div class="legal-callout-title">🛡️ Uniquement pour la sécurité</div>
+    <p>Ces données servent <span class="hl">exclusivement</span> à détecter et empêcher les <strong>injections SQL</strong>, tentatives de <strong>piratage</strong>, triche, spam ou abus automatisé, et à permettre la modération en cas de signalement.</p>
+    <p><span class="ul">L'éditeur ne les exploite jamais, ne les revend jamais, ne les croise jamais à des fins publicitaires.</span> Aucun profilage commercial, aucune monétisation des données personnelles : l'objectif reste exclusivement ludique et bienveillant.</p>
+  </div>
 
-  <h3>3.4 Destinataires des données</h3>
-  <p>Les données ne sont accessibles qu'à l'éditeur et à ses administrateurs techniques habilités, dans le strict cadre de la sécurité et de la modération du Service. Aucune donnée n'est partagée avec un tiers à des fins commerciales. L'hébergeur (voir article 2.2) héberge techniquement ces données sans en faire un usage propre.</p>
+  <h3>6.3 Durée, transfert, cookies</h3>
+  <ul>
+    <li>🗓️ Journal technique conservé <strong>12 mois maximum</strong>, purge automatique quotidienne.</li>
+    <li>🌍 Hébergement chez Replit, Inc. (États-Unis) : transfert hors UE encadré par les clauses contractuelles types du RGPD.</li>
+    <li>🍪 Uniquement du <strong>stockage local fonctionnel</strong> (session, préférences) — pas de cookies traceurs tiers, pas de publicité.</li>
+  </ul>
 
-  <h3>3.5 Durée de conservation</h3>
-  <p>Le journal technique d'activité (adresse IP, horodatage) est conservé pour une durée maximale de 12 mois à compter de sa collecte, conformément aux recommandations de la CNIL en matière de sécurité, puis automatiquement supprimé par une purge technique quotidienne. Les données d'un compte utilisateur sont conservées tant que le compte est actif, et supprimées immédiatement et définitivement sur demande de l'Utilisateur (bouton « Supprimer mon compte » accessible depuis son profil).</p>
-
-  <h3>3.6 Transfert hors Union européenne</h3>
-  <p>Le Service est hébergé par Replit, Inc., société établie aux États-Unis (voir article 2.2). Ce recours peut entraîner un transfert de données personnelles hors de l'Union européenne. L'éditeur veille à ce que ce transfert s'appuie sur un mécanisme reconnu par le RGPD (clauses contractuelles types de la Commission européenne ou équivalent proposé par l'hébergeur).</p>
-
-  <h3>3.7 Cookies et stockage local</h3>
-  <p>Le Service utilise le stockage local du navigateur (localStorage), et non des cookies traceurs tiers, uniquement à des fins strictement fonctionnelles : maintien de la session de jeu, préférences d'affichage (thème, taille du texte, son), et mémorisation de l'acceptation des présentes conditions. Ces éléments sont strictement nécessaires au fonctionnement du Service et ne requièrent pas de consentement préalable au sens de la réglementation applicable (ils ne servent ni à la publicité, ni au suivi entre sites, ni au profilage).</p>
-
-  <h3>3.8 Sécurité</h3>
-  <p>L'éditeur met en œuvre des mesures techniques raisonnables pour protéger les données contre l'accès non autorisé, la perte ou l'altération, notamment le hachage des mots de passe et la restriction de l'accès aux données aux seuls administrateurs habilités du Service.</p>
-
-  <h3>3.9 Droits des Utilisateurs</h3>
-  <p>Conformément au RGPD, tout Utilisateur dispose d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de ses données personnelles. Ces droits peuvent être exercés en contactant l'éditeur à l'adresse indiquée à l'article 2.2. L'éditeur s'engage à répondre dans un délai d'un mois. En cas de difficulté, l'Utilisateur dispose également du droit d'introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) — <a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>.</p>
-
-  <h3>3.10 Mineurs</h3>
-  <p>Le Service ne collecte pas volontairement de données sensibles concernant les mineurs, en dehors du pseudonyme choisi librement pour jouer. Les parents ou représentants légaux d'un mineur souhaitant exercer les droits mentionnés ci-dessus au nom de celui-ci peuvent contacter l'éditeur à cet effet.</p>
+  <h3>6.4 Tes droits</h3>
+  <p>Accès, rectification, <span class="ul">effacement</span>, limitation, opposition, portabilité — à exercer auprès de l'éditeur (section 5.2). Réponse sous un mois. Réclamation possible auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.</p>
   </section>
+
+  <div id="outro" class="legal-outro">
+  <h2>7. 💬 Pour finir</h2>
+  <p>Ce projet a une <span class="hl">vocation lucrative</span> assumée — il a besoin d'exister économiquement pour continuer à tourner et à s'améliorer. Mais soyons clairs : ce n'est <span class="hl">pas</span> une intention malveillante. Le vrai but reste, depuis le premier jour, <span class="ul">de faire passer un bon moment</span>, de faire rire une table d'amis un vendredi soir, rien de plus.</p>
+  <p>Ce jeu s'inspire du principe popularisé par <strong>Blanc-Manger Coco</strong> — un grand merci à cette référence du genre, qui a montré qu'on pouvait créer du lien et de vrais fous rires avec un peu d'humour noir bien dosé. « Ça va mal finir » en propose sa propre version, jouable en ligne et en multijoueur.</p>
+  <p class="hint">Merci d'avoir lu jusqu'ici. Maintenant va t'amuser 🎉</p>
+  <a class="btn btn-primary legal-back-btn-bottom" href="/">← Retour au jeu</a>
+  </div>
 </div>
+
+<script src="js/state.js"></script>
+<script src="js/animations.js"></script>
+<script>Particles.start();</script>
 </body>
 </html>

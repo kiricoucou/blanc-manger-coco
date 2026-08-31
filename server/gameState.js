@@ -20,7 +20,7 @@ const RECONNECT_GRACE_MS = 3 * 60 * 1000;
 const JUDGE_SELECTION_MS = 3200;
 const NEXT_ROUND_MS = 3200;
 const JUDGING_MS = 30 * 1000;
-const RESULTS_MS = 15 * 1000;
+const RESULTS_MS = 20 * 1000;
 
 // Represente une partie complete : joueurs, parametres, manche en cours, timers.
 class Game {
@@ -142,6 +142,7 @@ class Game {
     if (this.state === STATES.RESULTS) {
       base.result = this.round.result;
       base.leaderboard = this.getLeaderboard();
+      base.resultsEndsAt = this.round.resultsEndsAt;
     }
 
     if (this.state === STATES.NEXT_ROUND) {
@@ -177,9 +178,11 @@ class Game {
     if (this.state === STATES.JUDGING) {
       priv.isJudge = isJudge;
       if (isJudge) {
+        priv.cardText = this.round.card.text;
         priv.cards = this.round.shuffledOrder.map((entry, index) => ({
           index,
           filledText: entry.filledText,
+          answers: entry.answers,
         }));
       }
     }

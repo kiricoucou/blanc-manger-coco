@@ -10,8 +10,11 @@
 const db = require('./db');
 const { generateId } = require('./utils');
 
-const ZOE_NICKNAME = 'Bot Zoé';
-const MAX_NICKNAME = 'Bot Max';
+// Configurable via .env (BOT_ZOE_NAME / BOT_MAX_NAME) : le proprietaire de
+// l'instance peut renommer les bots du mode pratique sans toucher au code.
+// Repli sur les noms par defaut si absent/vide.
+const ZOE_NICKNAME = process.env.BOT_ZOE_NAME || 'Bot Zoé';
+const MAX_NICKNAME = process.env.BOT_MAX_NAME || 'Bot Max';
 
 const DEFAULT_SCENARIOS = [
   { text: 'Le pire cadeau de Noël que Mémé ait jamais offert : ______.', blanksTotal: 1, zoe: ['un abonnement magazine tricot'], max: ['un dentier de rechange'], winner: 'human' },

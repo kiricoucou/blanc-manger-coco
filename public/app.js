@@ -18,6 +18,11 @@
   } catch (e) { /* localStorage indisponible : tant pis, le check du DOMContentLoaded prendra le relais */ }
 })();
 
+// Rappel affiche a la creation ET a la jonction d'une partie (pas juste sur
+// l'accueil) : c'est a ces deux moments precis qu'un joueur s'apprete a
+// vraiment entrer en jeu avec d'autres, le rappel doit donc y etre visible.
+const FUN_REMINDER_TOAST = '🎉 On est là pour rigoler : ce qui se dit dans la partie reste dans la partie !';
+
 // Version de la Charte/CGU actuellement en vigueur. Un utilisateur qui a deja
 // accepte une version anterieure (stockee en localStorage) redevra accepter
 // si ce numero change (texte modifie) : ne JAMAIS le bumper a la legere.
@@ -171,8 +176,10 @@ render = function patchedRender() {
   TutorialTipsUI.update();
   maybeShowPracticeBriefing();
   maybeGateAdultContent(AppState.publicState);
+  applyEmojiOverridesIn(document.body); // couvre chat/scoreboard/tutorial-tip, rendus juste au-dessus
   if (shouldSkipRerender()) return;
   baseRender();
+  applyEmojiOverridesIn(document.getElementById('app'));
 
   const inCreateFlow = !AppState.gameCode && CREATE_MUSIC_SCREENS.has(AppState.localFlow);
   if (inCreateFlow && !MusicFX.playing) MusicFX.start();
@@ -298,7 +305,10 @@ const Actions = {
   'go-join': () => { AppState.draft.joinCode = ''; AppState.localFlow = 'JOIN_CODE'; render(); },
   'back-to-home': () => { AppState.localFlow = 'HOME'; render(); },
   'back-to-choose-mode': () => { AppState.localFlow = 'CHOOSE_CREATE_MODE'; render(); },
-  'view-quick-preview': () => { AppState.localFlow = 'QUICK_PREVIEW'; render(); },
+  'view-quick-preview': () => { AppState.quickPreviewIndex = 0; AppState.localFlow = 'QUICK_PREVIEW'; render(); },
+  'quick-preview-prev': () => { AppState.quickPreviewIndex = Math.max(0, (AppState.quickPreviewIndex || 0) - 1); render(); },
+  'quick-preview-next': () => { AppState.quickPreviewIndex = Math.min(QUICK_PREVIEW_ANSWERS.length - 1, (AppState.quickPreviewIndex || 0) + 1); render(); },
+  'quick-preview-choose': () => { toast('Bien joué ! Dans une vraie partie, ça rapporte 1 point 🏆'); },
   'choose-mode-normal': () => { AppState.draft.nickname = ''; AppState.draft.avatar = null; AppState.localFlow = 'CREATE_NICKNAME'; render(); },
   'choose-mode-tutorial': () => { AppState.draft.nickname = ''; AppState.draft.practiceMode = 'tutorial'; AppState.draft.practiceRole = null; AppState.localFlow = 'PRACTICE_NICKNAME'; render(); },
   'choose-mode-demo': () => { AppState.draft.nickname = ''; AppState.draft.practiceMode = 'demo'; AppState.draft.practiceRole = null; AppState.localFlow = 'PRACTICE_NICKNAME'; render(); },
@@ -376,6 +386,21 @@ const Actions = {
     AppState.draft.avatar = target.dataset.avatar;
     render();
   },
+  'avatar-tab': async (e, target) => {
+    AppState.avatarTab = target.dataset.tab;
+    render();
+    if (AppState.avatarTab === 'gif') {
+      // Reload a chaque ouverture de l'onglet : l'operateur ajoute des GIF a
+      // la main, sans redemarrage serveur, la liste doit donc refleter le
+      // disque a l'instant present et pas un etat fige au chargement de la page.
+      try {
+        const res = await fetch('/api/gif-avatars');
+        const data = await res.json();
+        AppState.gifAvatarIds = data.ids || [];
+      } catch (e2) { /* liste inchangee, tant pis */ }
+      render();
+    }
+  },
   'back-to-avatar': (e, target) => {
     AppState.localFlow = target.dataset.mode === 'join' ? 'JOIN_AVATAR' : 'CREATE_AVATAR';
     render();
@@ -399,6 +424,7 @@ const Actions = {
     Storage.save();
     AppState.localFlow = 'HOME';
     if (res.spectating) toast('La partie est en cours : tu rejoins à la prochaine manche.');
+    toast(FUN_REMINDER_TOAST);
     render();
   },
 
@@ -449,6 +475,7 @@ const Actions = {
     AppState.playerId = res.playerId;
     Storage.save();
     AppState.localFlow = 'CODE_REVEAL';
+    toast(FUN_REMINDER_TOAST);
     render();
   },
   'copy-code': async () => { await copyToClipboard(AppState.gameCode); toast('Code copié !'); },
@@ -774,6 +801,10 @@ const Actions = {
     const res = await Net.emit('playAgain');
     if (!res.ok) toast(res.error || 'Erreur.', 'error');
   },
+  'skip-results-wait': async () => {
+    const res = await Net.emit('skipResultsWait');
+    if (!res.ok) toast(res.error || 'Erreur.', 'error');
+  },
 };
 
 function onAppClick(e) {
@@ -788,11 +819,19 @@ function onAppKeydown(e) {
   if (e.key !== 'Enter') return;
   if (e.target.id === 'nickname-input') {
     e.preventDefault();
-    const action = AppState.localFlow === 'JOIN_NICKNAME' ? 'join-nickname-continue' : 'create-nickname-continue';
+    const action = AppState.localFlow === 'JOIN_NICKNAME' ? 'join-nickname-continue'
+      : AppState.localFlow === 'PRACTICE_NICKNAME' ? 'practice-nickname-continue'
+      : 'create-nickname-continue';
     Actions[action]();
   } else if (e.target.id === 'join-code-input') {
     e.preventDefault();
     Actions['join-code-continue']();
+  } else if (e.target.id === 'account-username' || e.target.id === 'account-password') {
+    e.preventDefault();
+    Actions[AppState.localFlow === 'ACCOUNT_REGISTER' ? 'account-register' : 'account-login']();
+  } else if (e.target.classList && e.target.classList.contains('answer-input')) {
+    e.preventDefault();
+    Actions['submit-answer']();
   }
 }
 
@@ -997,6 +1036,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     render();
   }).catch(() => { /* pas grave, l'ecran de parametres affichera "chargement" */ })
     .finally(() => { packsReady = true; LoadingScreen.setProgress(60); maybeFinishLoading(); });
+
+  // Rechargee a chaque ouverture de l'ecran d'avatar (voir 'avatar-tab'),
+  // ici seulement pour un premier affichage rapide si l'onglet GIF est
+  // ouvert tot (ex. retour PWA sur un flux deja en cours).
+  fetch('/api/gif-avatars').then((r) => r.json()).then((data) => {
+    AppState.gifAvatarIds = data.ids || [];
+  }).catch(() => { /* pas grave, l'onglet GIF affichera "aucun avatar" */ });
 
   // Lien de partage : ?code=XXXXXX ouvre direct l'ecran "rejoindre" pre-rempli.
   const sharedCode = new URLSearchParams(location.search).get('code');

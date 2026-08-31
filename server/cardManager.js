@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { shuffle, generateId, escapeHtml } = require('./utils');
 const cardStats = require('./cardStats');
+const appSettings = require('./appSettings');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const BLANK_TOKEN = '______';
@@ -19,15 +20,17 @@ function cardHasMention(text) {
 
 // Registre de tous les packs de cartes disponibles. "dynamic" = alimente par
 // les joueurs (deck communautaire), pas edite a la main dans data/.
+// description : valeur PAR DEFAUT, remplacee si l'admin en a enregistre une
+// autre (voir appSettings.getPackDescription -- persistee en base, pas ici).
 const PACKS = [
-  { id: 'normal', name: 'Normal', emoji: '🃏', ageRestricted: false, file: 'normal.json' },
-  { id: 'spicy', name: 'Spicy', emoji: '🔥', ageRestricted: false, file: 'spicy.json' },
-  { id: 'adult', name: '-18', emoji: '🔞', ageRestricted: true, file: 'adult.json' },
-  { id: 'adults', name: '-18 Vol.2', emoji: '🔞', ageRestricted: true, file: 'adults.json' },
-  { id: 'halloween', name: 'Halloween', emoji: '🎃', ageRestricted: false, file: 'halloween.json' },
-  { id: 'noel', name: 'Noël', emoji: '🎄', ageRestricted: false, file: 'noel.json' },
-  { id: 'ete', name: 'Été', emoji: '☀️', ageRestricted: false, file: 'ete.json' },
-  { id: 'community', name: 'Communauté', emoji: '👥', ageRestricted: false, file: 'community.json', dynamic: true },
+  { id: 'normal', name: 'Normal', emoji: '🃏', ageRestricted: false, file: 'normal.json', description: 'Ambiance générale : vie de couple, amis, situations du quotidien qui dérapent.' },
+  { id: 'spicy', name: 'Spicy', emoji: '🔥', ageRestricted: false, file: 'spicy.json', description: 'Ex, relations, petites vacheries qui piquent, sans être explicite.' },
+  { id: 'adult', name: '-18', emoji: '🔞', ageRestricted: true, file: 'adult.json', description: 'Soirée, amour, amis.' },
+  { id: 'adults', name: '-18 Vol.2', emoji: '🔞', ageRestricted: true, file: 'adults.json', description: 'Soirée, amour, amis, politique, réf. célébrités.' },
+  { id: 'halloween', name: 'Halloween', emoji: '🎃', ageRestricted: false, file: 'halloween.json', description: 'Horreur, déguisements et frissons pour soirée Halloween.' },
+  { id: 'noel', name: 'Noël', emoji: '🎄', ageRestricted: false, file: 'noel.json', description: 'Fêtes de fin d\'année, famille, cadeaux ratés et Mamie qui déraille.' },
+  { id: 'ete', name: 'Été', emoji: '☀️', ageRestricted: false, file: 'ete.json', description: 'Vacances, plage, chaleur et soirées d\'été.' },
+  { id: 'community', name: 'Communauté', emoji: '👥', ageRestricted: false, file: 'community.json', dynamic: true, description: 'Cartes proposées et validées par les joueurs eux-mêmes.' },
 ];
 const PACK_IDS = new Set(PACKS.map((p) => p.id));
 const PENDING_FILE = path.join(DATA_DIR, 'community_pending.json');
@@ -194,6 +197,7 @@ function getPackMeta() {
     requires: p.requires || null,
     dynamic: !!p.dynamic,
     count: CATALOG[p.id].length,
+    description: appSettings.getPackDescriptionOverride(p.id) ?? p.description ?? '',
   }));
 }
 

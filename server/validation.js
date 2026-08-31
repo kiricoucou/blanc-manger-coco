@@ -2,6 +2,7 @@
 
 const { sanitizeText, cleanRaw } = require('./utils');
 const { PACK_IDS } = require('./cardManager');
+const { isValidGifAvatarId } = require('./gifAvatars');
 
 const NICKNAME_MAX = 16;
 const NICKNAME_MIN = 1;
@@ -41,7 +42,12 @@ function isValidVisibility(v) {
   return v === 'public' || v === 'private';
 }
 
+// Avatar = soit un emoji de la liste fixe, soit "gif:<id>" ou <id> designe un
+// fichier reellement present dans public/assets/avatars/gif/ (voir gifAvatars.js).
 function isValidAvatar(avatar) {
+  if (typeof avatar === 'string' && avatar.startsWith('gif:')) {
+    return isValidGifAvatarId(avatar.slice(4));
+  }
   return VALID_AVATARS.has(avatar);
 }
 

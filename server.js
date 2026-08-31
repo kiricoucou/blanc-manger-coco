@@ -20,6 +20,8 @@ const accountManager = require('./server/accountManager');
 const cardManager = require('./server/cardManager');
 const pushManager = require('./server/pushManager');
 const siteStats = require('./server/siteStats');
+const gifAvatars = require('./server/gifAvatars');
+const emojiOverrides = require('./server/emojiOverrides');
 const logRetention = require('./server/logRetention');
 
 const PORT = process.env.PORT || 1563;
@@ -61,6 +63,11 @@ const server = http.createServer(app);
 const io = new Server(server, {
   pingTimeout: 20000,
   pingInterval: 10000,
+  // Par defaut 1 Mo : trop petit pour un upload d'avatar GIF encode en
+  // base64 (adminUploadGifAvatar, ~33% de surcout sur les 5 Mo max acceptes
+  // cote gifAvatars.js). N'affecte pas la validation des autres champs
+  // (pseudo, reponses, chat...), deja plafonnee independamment par champ.
+  maxHttpBufferSize: 8 * 1024 * 1024,
 });
 
 // Cache-busting automatique : chaque script/style local reference dans les
@@ -121,6 +128,16 @@ app.get('/api/packs', (req, res) => {
   res.json(cardManager.getPackMeta());
 });
 
+app.get('/api/gif-avatars', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ids: gifAvatars.listGifAvatarIds() });
+});
+
+app.get('/api/emoji-overrides', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(emojiOverrides.getEmojiOverrides());
+});
+
 app.get('/api/vapid-public-key', (req, res) => {
   res.json({ enabled: pushManager.enabled, publicKey: pushManager.publicKey });
 });
@@ -165,6 +182,7 @@ io.on('connection', (socket) => {
   socket.on('confirmCard', withAck(gameManager.confirmCard));
   socket.on('submitAnswer', withAck(gameManager.submitAnswer));
   socket.on('submitVote', withAck(gameManager.submitVote));
+  socket.on('skipResultsWait', withAck(gameManager.skipResultsWait));
   socket.on('playAgain', withAck(gameManager.playAgain));
   socket.on('listPublicGames', withAck(gameManager.listPublicGames));
   socket.on('submitCommunityCard', withAck(gameManager.submitCommunityCard));
@@ -198,6 +216,7 @@ io.on('connection', (socket) => {
   socket.on('adminJoinGameTicket', withAck(adminManager.joinGameTicket));
   socket.on('adminForceNextCard', withAck(adminManager.forceNextCard));
   socket.on('adminGetPacks', withAck(adminManager.getPacks));
+  socket.on('adminSetPackDescription', withAck(adminManager.setPackDescription));
   socket.on('adminListCards', withAck(adminManager.listCards));
   socket.on('adminAddCard', withAck(adminManager.addCard));
   socket.on('adminUpdateCard', withAck(adminManager.updateCard));
@@ -226,6 +245,8 @@ io.on('connection', (socket) => {
   socket.on('adminDeletePracticeScenario', withAck(adminManager.deletePracticeScenario));
   socket.on('adminGeolocateIp', withAck(adminManager.geolocateIp));
   socket.on('adminGetStats', withAck(adminManager.getStats));
+  socket.on('adminUploadGifAvatar', withAck(adminManager.uploadGifAvatar));
+  socket.on('adminDeleteGifAvatar', withAck(adminManager.deleteGifAvatar));
 
   // Ping leger pour mesurer la latence reelle cote client (indicateur wifi).
   socket.on('ping', (payload, ack) => {

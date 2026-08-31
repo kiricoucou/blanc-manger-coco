@@ -39,6 +39,25 @@ function setAnswerMaxLength(n) {
   return true;
 }
 
+// Description d'un pack de cartes, modifiable par l'admin (panel "Éditeur de
+// cartes") sans toucher au code -- ecrase la description par defaut definie
+// dans cardManager.js (PACKS) tant qu'une valeur est enregistree ici.
+const PACK_DESCRIPTION_PREFIX = 'packDescription:';
+const PACK_DESCRIPTION_MAX = 200;
+
+function getPackDescriptionOverride(packId) {
+  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(PACK_DESCRIPTION_PREFIX + packId);
+  return row ? row.value : null;
+}
+
+function setPackDescription(packId, text) {
+  const clean = String(text || '').trim().slice(0, PACK_DESCRIPTION_MAX);
+  db.prepare(
+    'INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value'
+  ).run(PACK_DESCRIPTION_PREFIX + packId, clean);
+  return clean;
+}
+
 module.exports = {
   getAnswerMaxLength,
   setAnswerMaxLength,
@@ -47,4 +66,7 @@ module.exports = {
   ANSWER_MAX_LENGTH_MIN,
   ANSWER_MAX_LENGTH_MAX,
   ANSWER_MAX_LENGTH_STEP,
+  getPackDescriptionOverride,
+  setPackDescription,
+  PACK_DESCRIPTION_MAX,
 };

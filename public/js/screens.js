@@ -81,7 +81,6 @@ function screenHome() {
       <h1 class="sr-only">Ça va mal finir</h1>
     </div>
     <p class="tagline">${t('home.tagline')}</p>
-    <p class="fun-disclaimer">🎉 On est ici pour rigoler ! L'humour peut être noir, ça reste un jeu entre vous : ce qui se dit dans la partie reste dans la partie. L'appli n'est pas responsable de ce qui déborderait en dehors. Amusez-vous bien ce soir 🥳 <a href="/legal.html#charte" target="_blank" rel="noopener">Charte d'utilisation &amp; CGU</a></p>
     <div class="home-actions">
       <button class="btn btn-primary btn-lg" data-action="go-create">${t('home.create')}</button>
       <button class="btn btn-secondary btn-lg" data-action="go-join">${t('home.join')}</button>
@@ -91,6 +90,8 @@ function screenHome() {
     </div>
 
     ${rulesSection()}
+
+    <p class="fun-disclaimer">🎉 On est ici pour rigoler ! L'humour peut être noir, ça reste un jeu entre vous : ce qui se dit dans la partie reste dans la partie. L'appli n'est pas responsable de ce qui déborderait en dehors. Amusez-vous bien ce soir 🥳 <a href="/legal.html#esprit" target="_blank" rel="noopener">Charte d'utilisation &amp; CGU</a></p>
   </div>`;
 }
 
@@ -102,8 +103,6 @@ function screenChooseMode() {
     <p class="hint">Tu pourras toujours créer une vraie partie ensuite.</p>
     <button class="btn btn-secondary btn-lg" data-action="choose-mode-tutorial">🎓 Tutoriel guidé</button>
     <p class="hint">Une partie solo contre 2 bots, avec des explications à chaque étape.</p>
-    <button class="btn btn-secondary btn-lg" data-action="choose-mode-demo">🤖 Partie démo</button>
-    <p class="hint">Même partie solo contre des bots, sans les explications.</p>
     <button class="btn btn-primary btn-lg" data-action="choose-mode-normal">🎮 Partie normale</button>
     <p class="hint">Avec de vrais joueurs, tes propres réglages.</p>
   </div>`;
@@ -125,25 +124,39 @@ function screenPracticeNickname() {
 
 // Aperçu statique d'une manche (aucune vraie partie creee), pour se faire une
 // idee du jeu en quelques secondes depuis l'accueil.
+// Aperçu solo, entièrement statique (pas de vraie partie) : simule le moment
+// où le juge parcourt les réponses une par une, exactement comme
+// screenJudging (même navigation prev/next), pour donner un avant-goût fidèle
+// sans avoir à créer une partie ni à attendre d'autres joueurs.
+const QUICK_PREVIEW_CARD = 'Le pire cadeau à offrir à ______.';
+const QUICK_PREVIEW_ANSWERS = [
+  'ma belle-mère',
+  'un vieux sandwich oublié',
+  'la honte de toute la famille',
+  'mon voisin bizarre',
+  'un calendrier périmé',
+];
+
 function screenQuickPreview() {
+  const idx = Math.min(AppState.quickPreviewIndex || 0, QUICK_PREVIEW_ANSWERS.length - 1);
+  const answer = QUICK_PREVIEW_ANSWERS[idx];
+
   return `
   <div class="screen center-screen">
     <button class="btn-back" data-action="back-to-home">${t('back')}</button>
     <h2>👀 Aperçu d'une manche</h2>
-    <p class="hint">Voici à quoi ressemble le moment où le juge choisit la meilleure réponse.</p>
+    <p class="hint">Voici à quoi ressemble le moment où le juge choisit la meilleure réponse. Fais défiler comme si c'était toi le juge :</p>
     <div class="card-face card-black card-face-md">
-      <div class="card-text" data-fit>${cardTextWithBlanks('Le pire cadeau à offrir à ______, c\'est ______.', ['ma belle-mère', 'un calendrier périmé'])}</div>
+      <div class="card-text" data-fit>${cardTextWithBlanks(QUICK_PREVIEW_CARD, [answer])}</div>
     </div>
-    <ul class="pick-card-row">
-      ${['un vieux sandwich oublié', 'la honte de toute la famille', 'mon voisin bizarre'].map((txt, i) => `
-        <li class="pick-card" style="--i:${i}">
-          <div class="card-face pick-card-face card-face-sm">
-            <div class="card-text">${escapeHtmlClient(txt)}</div>
-          </div>
-        </li>`).join('')}
-    </ul>
+    <div class="judging-nav">
+      <button class="btn btn-ghost" data-action="quick-preview-prev" ${idx <= 0 ? 'disabled' : ''}>◀ PRÉCÉDENT</button>
+      <span class="judging-pos">${idx + 1} / ${QUICK_PREVIEW_ANSWERS.length}</span>
+      <button class="btn btn-ghost" data-action="quick-preview-next" ${idx >= QUICK_PREVIEW_ANSWERS.length - 1 ? 'disabled' : ''}>SUIVANT ▶</button>
+    </div>
+    <button class="btn btn-primary btn-lg" data-action="quick-preview-choose">🏆 CHOISIR CETTE RÉPONSE</button>
     <p class="hint">Le juge lit les réponses mélangées et anonymes, puis choisit la meilleure. +1 point pour l'auteur !</p>
-    <button class="btn btn-primary btn-lg" data-action="choose-mode-normal">🎮 CRÉER UNE PARTIE</button>
+    <button class="btn btn-secondary btn-lg" data-action="choose-mode-normal">🎮 CRÉER UNE PARTIE</button>
   </div>`;
 }
 
@@ -199,15 +212,31 @@ function screenNickname(mode) {
 }
 
 function screenAvatar(mode) {
-  const grid = AVATARS.map((a, i) => {
+  const tab = AppState.avatarTab || 'emoji';
+
+  const emojiGrid = AVATARS.map((a, i) => {
     const selected = AppState.draft.avatar === a ? 'avatar-selected' : '';
     return `<button class="avatar-btn ${selected}" style="--i:${i}" data-action="select-avatar" data-avatar="${a}" aria-label="Avatar ${a}">${a}</button>`;
   }).join('');
+
+  const gifIds = AppState.gifAvatarIds || [];
+  const gifGrid = gifIds.length ? gifIds.map((id, i) => {
+    const value = 'gif:' + id;
+    const selected = AppState.draft.avatar === value ? 'avatar-selected' : '';
+    return `<button class="avatar-btn ${selected}" style="--i:${i}" data-action="select-avatar" data-avatar="${value}" aria-label="Avatar ${escapeHtmlClient(id)}">
+      <img src="assets/avatars/gif/${encodeURIComponent(id)}.gif" alt="${escapeHtmlClient(id)}" loading="lazy" />
+    </button>`;
+  }).join('') : `<p class="avatar-gif-empty">Aucun avatar GIF disponible pour le moment.</p>`;
+
   return `
   <div class="screen center-screen">
     <button class="btn-back" data-action="back-to-nickname" data-mode="${mode}">${t('back')}</button>
     <h2>${t('avatar.title')}</h2>
-    <div class="avatar-grid">${grid}</div>
+    <div class="avatar-tabs">
+      <button class="avatar-tab-btn ${tab === 'emoji' ? 'avatar-tab-active' : ''}" data-action="avatar-tab" data-tab="emoji">😀 Emoji</button>
+      <button class="avatar-tab-btn ${tab === 'gif' ? 'avatar-tab-active' : ''}" data-action="avatar-tab" data-tab="gif">🎬 GIF</button>
+    </div>
+    <div class="avatar-grid">${tab === 'gif' ? gifGrid : emojiGrid}</div>
     <button class="btn btn-primary btn-lg" data-action="${mode}-avatar-continue" ${AppState.draft.avatar ? '' : 'disabled'}>${t('continue')}</button>
   </div>`;
 }
@@ -219,7 +248,10 @@ function packToggleRow(pack, selectedPacks, actionName) {
   const disabled = !requiresOk;
   return `
     <div class="setting-row pack-row ${disabled ? 'setting-disabled' : ''}">
-      <span>${pack.emoji} ${escapeHtmlClient(pack.name)} <span class="pack-count">${pack.count} carte${pack.count > 1 ? 's' : ''}</span></span>
+      <span>
+        ${pack.emoji} ${escapeHtmlClient(pack.name)} <span class="pack-count">${pack.count} carte${pack.count > 1 ? 's' : ''}</span>
+        ${pack.description ? `<span class="pack-desc">${escapeHtmlClient(pack.description)}</span>` : ''}
+      </span>
       <button class="toggle ${selected ? 'toggle-on' : ''}" data-action="${actionName}" data-pack="${pack.id}" role="switch" aria-checked="${selected}" ${disabled ? 'disabled' : ''}>
         <span class="toggle-knob"></span>
       </button>
@@ -352,7 +384,7 @@ function playerRow(p, opts) {
   const spectatorTag = p.spectating ? '<span class="spectator-tag">👀 rejoint bientôt</span>' : '';
   return `
     <li class="player-row${offline}">
-      <span class="player-avatar">${p.avatar}</span>
+      <span class="player-avatar">${avatarHtml(p.avatar)}</span>
       <span class="player-name">${crown}${p.nickname}${spectatorTag}</span>
       ${opts.showScore ? `<span class="player-score">${p.score}</span>` : ''}
       ${kickBtn}
@@ -471,7 +503,7 @@ function screenJudgeSelection(s) {
     <h2>TIRAGE DU PREMIER JUGE...</h2>
     <div class="countdown-huge" data-endsat="${s.judgeSelectionEndsAt}">3</div>
     <div class="judge-reveal">
-      <span class="judge-avatar">${judgeAvatar(s)}</span>
+      <span class="judge-avatar">${avatarHtml(judgeAvatar(s))}</span>
       <p class="judge-name">👑 ${judgeName(s).toUpperCase()}</p>
       <p class="judge-sub">C'EST TON TOUR !</p>
     </div>
@@ -497,7 +529,7 @@ function screenCardSelection(s) {
       <span class="reroll-label">🎯 Cette carte mentionne un joueur, choisis qui :</span>
       <div class="chip-row">
         ${s.players.filter((p) => p.id !== s.judgeId).map((p) => `
-          <button class="chip" data-action="select-card-mention" data-player-id="${p.id}" ${p.id === mentionChosenId ? 'style="border-color:var(--gold)"' : ''}>${p.avatar} ${escapeHtmlClient(p.nickname)}</button>
+          <button class="chip" data-action="select-card-mention" data-player-id="${p.id}" ${p.id === mentionChosenId ? 'style="border-color:var(--gold)"' : ''}>${avatarHtml(p.avatar)} ${escapeHtmlClient(p.nickname)}</button>
         `).join('')}
       </div>
     </div>
@@ -618,7 +650,7 @@ function screenJudging(s) {
     <h2>CHOISIS LA MEILLEURE RÉPONSE</h2>
     <div class="timer-ring"><span data-endsat="${s.judgingEndsAt}">--</span></div>
     <div class="card-face card-face-lg card-black ${reaction === 'like' ? 'card-liked' : ''} ${reaction === 'dislike' ? 'card-disliked' : ''}">
-      <div class="card-text" data-fit>${current ? current.filledText.replace(/\n/g, '<br>') : ''}</div>
+      <div class="card-text" data-fit>${current ? filledCardWithHighlight(priv.cardText, current.answers) : ''}</div>
     </div>
     <div class="reaction-row">
       <button class="btn-reaction ${reaction === 'dislike' ? 'reaction-active' : ''}" data-action="judging-react" data-reaction="dislike" data-index="${idx}" aria-label="Je n'aime pas">👎</button>
@@ -637,13 +669,13 @@ function screenResults(s) {
   const r = s.result;
   const others = r.others.map((o) => `
     <li class="other-answer">
-      <div class="other-answer-head">${o.avatar} ${o.nickname}</div>
-      <div class="other-answer-text">${o.filledText.replace(/\n/g, '<br>')}</div>
+      <div class="other-answer-head">${avatarHtml(o.avatar)} ${o.nickname}</div>
+      <div class="other-answer-text">${filledCardWithHighlight(r.cardText, o.answers)}</div>
     </li>`).join('');
 
   const board = s.leaderboard.map((p, i) => {
     const medal = ['🥇', '🥈', '🥉'][i] || (i + 1) + '.';
-    return `<li class="leaderboard-row"><span>${medal}</span><span class="player-avatar">${p.avatar}</span><span class="player-name">${p.nickname}</span><span class="player-score">${p.score}</span></li>`;
+    return `<li class="leaderboard-row"><span>${medal}</span><span class="player-avatar">${avatarHtml(p.avatar)}</span><span class="player-name">${p.nickname}</span><span class="player-score">${p.score}</span></li>`;
   }).join('');
 
   return `
@@ -651,13 +683,14 @@ function screenResults(s) {
     ${r.wasAuto ? '<p class="hint">⏰ TEMPS ÉCOULÉ — réponse choisie automatiquement.</p>' : ''}
     <p class="drum-emoji">🥁</p>
     <h2>🏆 GAGNANT !</h2>
+    <div class="timer-ring"><span data-endsat="${s.resultsEndsAt}">--</span></div>
     <div class="winner-reveal">
-      <span class="judge-avatar">${r.winnerAvatar}</span>
+      <span class="judge-avatar">${avatarHtml(r.winnerAvatar)}</span>
       <p class="judge-name">${r.winnerNickname.toUpperCase()}</p>
       <p class="point-badge">+1 POINT</p>
     </div>
     <div class="card-face card-face-md card-black card-winner">
-      <div class="card-text" data-fit>${r.filledText.replace(/\n/g, '<br>')}<br><span class="trophy-mark">🏆</span></div>
+      <div class="card-text" data-fit>${filledCardWithHighlight(r.cardText, r.answers)}<br><span class="trophy-mark">🏆</span></div>
     </div>
     <button class="btn btn-secondary" data-action="download-card-image">📸 Télécharger la carte (.jpg)</button>
 
@@ -665,6 +698,12 @@ function screenResults(s) {
 
     <h3>🏆 CLASSEMENT</h3>
     <ul class="leaderboard-list">${board}</ul>
+
+    ${s.adminId === AppState.playerId ? `<button class="btn btn-ghost" data-action="skip-results-wait">${
+      (s.leaderboard.find((p) => p.id === r.winnerId) || {}).score >= s.settings.winningScore
+        ? '🏁 Voir le classement final'
+        : '⏭ Manche suivante'
+    }</button>` : ''}
   </div>`;
 }
 
@@ -674,7 +713,7 @@ function screenNextRound(s) {
     <div class="countdown-huge" data-endsat="${s.nextRoundEndsAt}">3</div>
     <p>Prochain juge :</p>
     <div class="judge-reveal">
-      <span class="judge-avatar">${judgeAvatar(s)}</span>
+      <span class="judge-avatar">${avatarHtml(judgeAvatar(s))}</span>
       <p class="judge-name">👑 ${judgeName(s).toUpperCase()}</p>
     </div>
   </div>`;
@@ -685,7 +724,7 @@ function podiumStep(p, place) {
   const medal = ['🥇', '🥈', '🥉'][place - 1];
   return `
     <div class="podium-step podium-step-${place}" style="--i:${place}">
-      <span class="podium-avatar">${p.avatar}</span>
+      <span class="podium-avatar">${avatarHtml(p.avatar)}</span>
       <span class="podium-medal">${medal}</span>
       <span class="podium-name">${p.nickname}</span>
       <span class="podium-score">${p.score} pts</span>
@@ -699,7 +738,7 @@ function screenGameOver(s) {
   const [first, second, third] = s.leaderboard;
   const rest = s.leaderboard.slice(3);
   const restList = rest.map((p, i) => `
-    <li class="leaderboard-row"><span>${i + 4}.</span><span class="player-avatar">${p.avatar}</span><span class="player-name">${p.nickname}</span><span class="player-score">${p.score}</span></li>`
+    <li class="leaderboard-row"><span>${i + 4}.</span><span class="player-avatar">${avatarHtml(p.avatar)}</span><span class="player-name">${p.nickname}</span><span class="player-score">${p.score}</span></li>`
   ).join('');
 
   return `
@@ -707,7 +746,7 @@ function screenGameOver(s) {
     <p class="confetti-emoji">🎉🎉🎉🎉🎉</p>
     <h1>VICTOIRE !</h1>
     <div class="winner-reveal winner-reveal-lg">
-      <span class="judge-avatar judge-avatar-xl">${winner ? winner.avatar : '🏆'}</span>
+      <span class="judge-avatar judge-avatar-xl">${avatarHtml(winner ? winner.avatar : '🏆')}</span>
       <p class="judge-name">${winner ? winner.nickname.toUpperCase() : ''}</p>
       <p class="point-badge">${winner ? winner.score : 0} POINTS</p>
       <p class="champion-tag">🏆 CHAMPION 🏆</p>

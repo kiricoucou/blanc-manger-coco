@@ -82,8 +82,12 @@ function downloadWinningCardImage({ text, winnerNickname, winnerAvatar, gameCode
   ctx.font = '64px "Fredoka", sans-serif';
   ctx.fillText('🏆', W / 2, H - 210);
 
+  // Un avatar GIF ("gif:nom") ne peut pas se dessiner comme du texte brut sur
+  // le canvas : on retombe sur un symbole generique plutot que d'afficher la
+  // chaine litterale "gif:nom-du-fichier".
   ctx.font = '48px sans-serif';
-  ctx.fillText(winnerAvatar || '', W / 2 - 90, H - 130);
+  const avatarGlyph = (winnerAvatar && winnerAvatar.startsWith('gif:')) ? '🎬' : (winnerAvatar || '');
+  ctx.fillText(avatarGlyph, W / 2 - 90, H - 130);
 
   ctx.font = '700 40px "Fredoka", sans-serif';
   ctx.fillStyle = '#cc9a4a';

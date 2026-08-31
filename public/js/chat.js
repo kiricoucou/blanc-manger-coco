@@ -83,7 +83,7 @@ const ChatUI = (() => {
     const tabsEl = document.getElementById('chat-tabs');
     tabsEl.innerHTML = [
       `<button class="chat-tab ${AppState.chatTab === 'general' ? 'chat-tab-active' : ''}" data-tab="general">Général</button>`,
-      ...players.map((p) => `<button class="chat-tab ${AppState.chatTab === p.id ? 'chat-tab-active' : ''}" data-tab="${p.id}">${p.avatar}</button>`),
+      ...players.map((p) => `<button class="chat-tab ${AppState.chatTab === p.id ? 'chat-tab-active' : ''}" data-tab="${p.id}">${avatarHtml(p.avatar)}</button>`),
     ].join('');
     tabsEl.querySelectorAll('.chat-tab').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -99,7 +99,7 @@ const ChatUI = (() => {
           if (m.isSystem) return `<div class="chat-msg chat-msg-system">${m.text}</div>`;
           const own = m.fromId === AppState.playerId;
           return `<div class="chat-msg ${own ? 'chat-msg-own' : ''}">
-            <span class="chat-msg-author">${m.fromAvatar} ${m.fromNickname}</span>
+            <span class="chat-msg-author">${avatarHtml(m.fromAvatar)} ${m.fromNickname}</span>
             <span class="chat-msg-text">${m.text}</span>
           </div>`;
         }).join('')

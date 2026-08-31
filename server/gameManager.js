@@ -32,9 +32,12 @@ function logActivity(eventType, { nickname, gameCode, mode, ip }) {
 // repondent, votent, avec un petit delai pour ne pas paraitre instantanes.
 // Reponses et vainqueur pilotes par des scenarios fixes (practiceScenarios.js) :
 // aucun hasard, la demo/tutoriel est identique et reproductible a chaque partie.
+// Avatars GIF (voir public/assets/avatars/gif/, meme convention "gif:<id>"
+// que les avatars choisis par un vrai joueur) : a deposer soi-meme,
+// robot_ok.gif et robot_mdr.gif, deja presents dans le dossier.
 const BOT_PROFILES = [
-  { nickname: ZOE_NICKNAME, avatar: '🤖' },
-  { nickname: MAX_NICKNAME, avatar: '👾' },
+  { nickname: ZOE_NICKNAME, avatar: 'gif:robot_ok' },
+  { nickname: MAX_NICKNAME, avatar: 'gif:robot_mdr' },
 ];
 
 function botDelay(min, max) { return min + Math.floor(Math.random() * (max - min)); }
@@ -1046,7 +1049,7 @@ function resolveJudging(game, index, wasAuto) {
     .filter((e) => e.playerId !== winnerEntry.playerId)
     .map((e) => {
       const p = game.getPlayer(e.playerId);
-      return { playerId: e.playerId, nickname: p ? p.nickname : '?', avatar: p ? p.avatar : '?', filledText: e.filledText };
+      return { playerId: e.playerId, nickname: p ? p.nickname : '?', avatar: p ? p.avatar : '?', filledText: e.filledText, answers: e.answers };
     });
 
   game.round.result = {
@@ -1054,14 +1057,30 @@ function resolveJudging(game, index, wasAuto) {
     winnerNickname: winner ? winner.nickname : '?',
     winnerAvatar: winner ? winner.avatar : '?',
     filledText: winnerEntry.filledText,
+    answers: winnerEntry.answers,
+    cardText: game.round.card.text,
     wasAuto,
     others,
   };
 
   game.state = STATES.RESULTS;
+  game.round.resultsEndsAt = now() + resultsMs(game);
   broadcastState(game);
 
   game.timers.results = setTimeout(() => afterResults(game), resultsMs(game));
+}
+
+// Permet a l'admin de la partie (le createur, pas un admin plateforme) de
+// passer immediatement l'attente de la manche suivante ou l'ecran de
+// resultats, sans devoir subir le delai fixe -- utile quand tout le monde a
+// deja vu/valide, pas la peine d'attendre le chrono pour rien.
+function skipResultsWait(socket, payload, ack) {
+  const game = games.get(socket.data.gameCode);
+  if (!game) return ack({ ok: false, error: 'Partie introuvable.' });
+  if (game.adminId !== socket.data.playerId) return ack({ ok: false, error: "Seul l'hôte de la partie peut passer." });
+  if (game.state !== STATES.RESULTS) return ack({ ok: false, error: 'Étape invalide.' });
+  ack({ ok: true });
+  afterResults(game);
 }
 
 function afterResults(game) {
@@ -1226,10 +1245,11 @@ const CHAT_RATE_MS = 800; // 1 message max toutes les 800ms par joueur
 const lastChatAt = new Map(); // playerId -> timestamp
 
 // ---------- Reactions rapides (ephemeres, pas de persistance/historique) ----------
+// Volontairement pas de limite de frequence : c'est un defouloir purement
+// visuel (aucune ecriture en base, aucun cout reel), le spam fait partie de
+// l'experience voulue plutot qu'un abus a freiner.
 
 const REACTION_EMOJIS = new Set(['😂', '😭', '🔥', '💀', '👏', '😱']);
-const REACTION_RATE_MS = 1500;
-const lastReactionAt = new Map(); // playerId -> timestamp
 
 function sendReaction(socket, payload, ack) {
   const game = games.get(socket.data.gameCode);
@@ -1239,10 +1259,6 @@ function sendReaction(socket, payload, ack) {
 
   const emoji = payload && payload.emoji;
   if (!REACTION_EMOJIS.has(emoji)) return ack({ ok: false, error: 'Réaction invalide.' });
-
-  const lastAt = lastReactionAt.get(sender.id) || 0;
-  if (now() - lastAt < REACTION_RATE_MS) return ack({ ok: false, error: 'Trop rapide, ralentis.' });
-  lastReactionAt.set(sender.id, now());
 
   ioRef.to(game.code).emit('reaction', { emoji, fromNickname: sender.nickname, fromAvatar: sender.avatar });
   ack({ ok: true });
@@ -1308,6 +1324,7 @@ module.exports = {
   confirmCard,
   submitAnswer,
   submitVote,
+  skipResultsWait,
   playAgain,
   handleDisconnect,
   broadcastState,

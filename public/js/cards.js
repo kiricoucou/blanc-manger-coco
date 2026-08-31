@@ -36,6 +36,42 @@ function cardTextWithBlanks(text, filledValues) {
   return html.replace(/\n/g, '<br>');
 }
 
+// Variante de cardTextWithBlanks pour une carte DEJA remplie par le serveur
+// (juge qui compare les reponses, ecran de resultat) : les reponses des
+// joueurs doivent visuellement se distinguer du texte fixe de la carte (une
+// autre couleur), sur tous les appareils -- jusqu'ici JUDGING/RESULTS
+// affichaient un flux de texte plat sans cette distinction.
+// IMPORTANT : answers vient du serveur deja echappe HTML (sanitizeText cote
+// serveur, meme convention que les pseudos) -> ne JAMAIS le re-echapper ici
+// (sinon double-echappement, ex. "&lt;3" affiche au lieu de "<3").
+function filledCardWithHighlight(cardText, answers) {
+  const { segments } = parseCardClient(cardText || '');
+  let html = escapeHtmlClient(segments[0]);
+  for (let i = 1; i < segments.length; i++) {
+    const value = (answers && answers[i - 1] != null) ? answers[i - 1] : '';
+    html += `<span class="blank-filled">${value}</span>`;
+    html += escapeHtmlClient(segments[i]);
+  }
+  return html.replace(/\n/g, '<br>');
+}
+
+// Avatar = soit un emoji brut (retro-compatible, valeur historique), soit
+// "gif:<id>" pour un des GIF deposes a la main par l'operateur (voir
+// server/gifAvatars.js). Un seul point de rendu pour toute l'app : chaque
+// endroit qui affichait ${p.avatar} en texte brut doit passer par cette
+// fonction, sinon un joueur avec un avatar GIF s'afficherait comme
+// "gif:nom-du-fichier" en toutes lettres.
+// width/height en "em" : la miniature suit naturellement la taille de police
+// du contexte (petite dans une liste de joueurs, grande sur l'ecran de
+// victoire...) sans avoir a dupliquer une regle par emplacement.
+function avatarHtml(avatar) {
+  if (typeof avatar === 'string' && avatar.startsWith('gif:')) {
+    const id = avatar.slice(4);
+    return `<img class="avatar-gif" src="assets/avatars/gif/${encodeURIComponent(id)}.gif" alt="${escapeHtmlClient(id)}" />`;
+  }
+  return escapeHtmlClient(avatar || '');
+}
+
 function escapeHtmlClient(str) {
   const div = document.createElement('div');
   div.textContent = str;

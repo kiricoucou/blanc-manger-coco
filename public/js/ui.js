@@ -2,17 +2,39 @@
 
 const $app = () => document.getElementById('app');
 
+// Jamais plus de MAX_TOASTS a l'ecran a la fois : un utilisateur qui spam un
+// bouton d'action (chaque erreur ouvre un toast) ne doit pas voir la pile
+// grandir sans fin hors ecran. Au-dela, le plus ancien est retire tout de
+// suite (meme animation de sortie que le retrait naturel), la pile reste
+// toujours a 3 maximum.
+const MAX_TOASTS = 3;
+const activeToasts = [];
+
+function dismissToast(el) {
+  if (!el || el._dismissing) return;
+  el._dismissing = true;
+  clearTimeout(el._toastTimer);
+  const idx = activeToasts.indexOf(el);
+  if (idx !== -1) activeToasts.splice(idx, 1);
+  el.classList.remove('toast-show');
+  setTimeout(() => el.remove(), 300);
+}
+
 function toast(message, type) {
   const root = document.getElementById('toast-root');
   const el = document.createElement('div');
   el.className = 'toast ' + (type === 'error' ? 'toast-error' : 'toast-info');
   el.textContent = message;
   root.appendChild(el);
+  activeToasts.push(el);
+  applyEmojiOverridesIn(el);
   requestAnimationFrame(() => el.classList.add('toast-show'));
-  setTimeout(() => {
-    el.classList.remove('toast-show');
-    setTimeout(() => el.remove(), 300);
-  }, 3200);
+
+  while (activeToasts.length > MAX_TOASTS) {
+    dismissToast(activeToasts[0]);
+  }
+
+  el._toastTimer = setTimeout(() => dismissToast(el), 3200);
 }
 
 // Ouvre une modale de confirmation generique. Resout true/false selon le choix.
@@ -40,6 +62,7 @@ function confirmModal({ title, body, confirmLabel, cancelLabel, danger, requireC
       </div>
     `;
     document.body.appendChild(overlay);
+    applyEmojiOverridesIn(overlay);
     requestAnimationFrame(() => overlay.classList.add('modal-show'));
 
     const confirmBtn = overlay.querySelector('[data-action="confirm"]');
@@ -81,6 +104,7 @@ function infoModal({ title, bodyHtml, confirmLabel }) {
       </div>
     `;
     document.body.appendChild(overlay);
+    applyEmojiOverridesIn(overlay);
     requestAnimationFrame(() => overlay.classList.add('modal-show'));
 
     function close() {
@@ -110,7 +134,7 @@ function legalGateModal() {
         <h3 id="legal-gate-title">🎉 Avant de commencer</h3>
         <div class="modal-info-body">
           <p><strong>Ça va mal finir</strong> est un jeu d'ambiance à but humoristique, pensé pour être joué entre adultes consentants lors d'une soirée. Le ton peut être noir ou provocateur au second degré : rien de ce qui est écrit ou dit pendant une partie ne reflète les valeurs de l'application, de son éditeur, ni n'est destiné à sortir du cadre du jeu.</p>
-          <p>Certains packs de cartes sont réservés aux personnes majeures et ne s'activent qu'après une certification d'âge explicite. En utilisant l'application, tu confirmes avoir pris connaissance de la <a href="/legal.html#charte" target="_blank" rel="noopener">Charte d'utilisation</a> et des <a href="/legal.html#cgu" target="_blank" rel="noopener">Conditions Générales d'Utilisation</a>, et tu les acceptes intégralement.</p>
+          <p>Certains packs de cartes sont réservés aux personnes majeures et ne s'activent qu'après une certification d'âge explicite. En utilisant l'application, tu confirmes avoir pris connaissance de la <a href="/legal.html#esprit" target="_blank" rel="noopener">Charte d'utilisation</a> et des <a href="/legal.html#cgu" target="_blank" rel="noopener">Conditions Générales d'Utilisation</a>, et tu les acceptes intégralement.</p>
         </div>
         <label class="modal-checkbox-row">
           <input type="checkbox" id="legal-gate-checkbox" />
@@ -122,6 +146,7 @@ function legalGateModal() {
       </div>
     `;
     document.body.appendChild(overlay);
+    applyEmojiOverridesIn(overlay);
     requestAnimationFrame(() => overlay.classList.add('modal-show'));
 
     const confirmBtn = overlay.querySelector('[data-action="confirm"]');

@@ -29,7 +29,7 @@ const ScoreboardUI = (() => {
           <div class="mini-scoreboard-bar"><div class="mini-scoreboard-fill" style="width:${pct}%"></div></div>
         </div>
         <ul class="mini-scoreboard-list">
-          ${top.map((p, i) => `<li><span>${['🥇', '🥈', '🥉'][i]}</span><span class="mini-scoreboard-avatar">${p.avatar}</span><span class="mini-scoreboard-name">${p.nickname}</span><span class="mini-scoreboard-score">${p.score}</span></li>`).join('')}
+          ${top.map((p, i) => `<li><span>${['🥇', '🥈', '🥉'][i]}</span><span class="mini-scoreboard-avatar">${avatarHtml(p.avatar)}</span><span class="mini-scoreboard-name">${p.nickname}</span><span class="mini-scoreboard-score">${p.score}</span></li>`).join('')}
         </ul>
       </div>`;
   }

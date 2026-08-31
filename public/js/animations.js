@@ -53,12 +53,18 @@ const Particles = (() => {
       y: Math.random() * window.innerHeight,
       r: 1.5 + depth * 5,
       depth,
-      vx: (Math.random() - 0.5) * 0.22,
-      vy: -0.15 - Math.random() * 0.32,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -0.3 - Math.random() * 0.55,
       color: palette[Math.floor(Math.random() * palette.length)],
       drift: Math.random() * Math.PI * 2,
       twinkleSpeed: 0.008 + Math.random() * 0.02,
       twinklePhase: Math.random() * Math.PI * 2,
+      // Rayon/vitesse de la petite boucle orbitale superposee au deplacement
+      // lineaire : sans ca les particules montent juste tout droit, "tournent"
+      // demande un vrai mouvement circulaire visible en plus de la derive.
+      orbitR: 6 + depth * 14,
+      orbitSpeed: 0.02 + Math.random() * 0.025,
+      orbitPhase: Math.random() * Math.PI * 2,
     };
   }
 
@@ -68,17 +74,20 @@ const Particles = (() => {
     const parallaxY = (pointerY - 0.5) * 16;
     const isLight = AppState.theme === 'light';
     particles.forEach((p) => {
-      p.drift += 0.006;
+      p.drift += 0.014;
+      p.orbitPhase += p.orbitSpeed;
       p.twinklePhase += p.twinkleSpeed;
-      p.x += p.vx + Math.sin(p.drift) * 0.12;
+      p.x += p.vx + Math.sin(p.drift) * 0.35;
       p.y += p.vy;
       if (p.y < -10) { p.y = window.innerHeight + 10; p.x = Math.random() * window.innerWidth; }
       if (p.x < -10) p.x = window.innerWidth + 10;
       if (p.x > window.innerWidth + 10) p.x = -10;
       const twinkle = 0.5 + 0.5 * Math.sin(p.twinklePhase);
       const radius = p.r * (0.8 + twinkle * 0.5);
-      const drawX = p.x + parallaxX * p.depth;
-      const drawY = p.y + parallaxY * p.depth;
+      const orbitX = Math.cos(p.orbitPhase) * p.orbitR;
+      const orbitY = Math.sin(p.orbitPhase) * p.orbitR * 0.6;
+      const drawX = p.x + orbitX + parallaxX * p.depth;
+      const drawY = p.y + orbitY + parallaxY * p.depth;
       ctx.beginPath();
       ctx.globalAlpha = (isLight ? 0.35 : 0.55) + twinkle * (isLight ? 0.3 : 0.45);
       ctx.fillStyle = p.color;

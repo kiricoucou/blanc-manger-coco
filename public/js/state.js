@@ -37,6 +37,10 @@ const AppState = {
 
   // Packs de cartes disponibles (recharges depuis /api/packs au demarrage).
   packMeta: [],
+  // Ids des GIF d'avatar deposes a la main par l'operateur (recharges depuis
+  // /api/gif-avatars), et onglet actif de l'ecran de choix d'avatar.
+  gifAvatarIds: [],
+  avatarTab: 'emoji', // 'emoji' | 'gif'
   serverVersionLabel: '', // horodatage de demarrage serveur, affiche en petit (diagnostic cache)
   publicGamesList: [],
 

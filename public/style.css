@@ -442,6 +442,9 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
   touch-action: manipulation;
   transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
   width: 100%;
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   display: flex;
   align-items: center;
@@ -603,6 +606,31 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
   animation-delay: calc(var(--i, 0) * 18ms);
 }
 .avatar-btn:active { transform: scale(0.88) rotate(-4deg); }
+.avatar-btn img { width: 70%; height: 70%; object-fit: contain; border-radius: 50%; pointer-events: none; }
+
+/* Avatar GIF affiche partout dans le jeu (liste de joueurs, classement,
+   ecran de victoire...) : "em" pour suivre la taille de police du contexte
+   sans regle dediee a chaque emplacement (meme principe qu'un emoji inline). */
+.avatar-gif { width: 1.15em; height: 1.15em; object-fit: cover; border-radius: 50%; vertical-align: -0.2em; }
+
+/* Emoji decoratif remplace par un GIF (public/js/emojiOverrides.js) : suit
+   la taille de police du contexte, comme l'emoji qu'il remplace. Pas
+   d'arrondi/cover ici contrairement a .avatar-gif : ce n'est pas un visage
+   dans un cercle, juste une icone, mieux vaut la montrer entiere. */
+.emoji-gif { width: 1em; height: 1em; object-fit: contain; vertical-align: -0.15em; display: inline-block; }
+
+.avatar-tabs { display: flex; gap: 8px; margin: 4px 0 6px; }
+.avatar-tab-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid transparent;
+  color: var(--text-1);
+  font-weight: 800;
+  cursor: pointer;
+}
+.avatar-tab-btn.avatar-tab-active { border-color: var(--pink); color: var(--text-0); }
+.avatar-gif-empty { color: var(--text-2); font-size: 0.85rem; max-width: 300px; }
 .avatar-selected {
   border-color: var(--gold);
   background: radial-gradient(circle at 35% 30%, rgba(204,154,74,0.35), rgba(194,67,74,0.18));
@@ -651,6 +679,7 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
   margin-left: 6px;
   vertical-align: middle;
 }
+.pack-desc { display: block; font-size: 0.72rem; font-weight: 400; color: var(--text-2); margin-top: 2px; }
 .toggle {
   width: 54px;
   height: 30px;
@@ -994,7 +1023,12 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
    par les boutons PRECEDENT/SUIVANT sur les ecrans etroits et le "/" finit
    par retourner a la ligne (rendu type "1" / "/" / "2" sur 3 lignes, illisible). */
 .judging-pos { font-weight: 800; color: var(--text-2); white-space: nowrap; flex-shrink: 0; }
-.judging-nav .btn { flex-shrink: 1; min-width: 0; }
+/* white-space:nowrap ici aussi : sans ca "PRECEDENT" (plus long que "SUIVANT")
+   retourne seul a la ligne sous son fleche des que le bouton retrecit,
+   pendant que "SUIVANT" tient sur une ligne -- asymetrie moche entre les
+   deux boutons du meme groupe. font-size legerement reduit pour que les deux
+   tiennent sur une ligne meme sur les ecrans les plus etroits. */
+.judging-nav .btn { flex-shrink: 1; min-width: 0; white-space: nowrap; font-size: 0.85rem; padding-left: 12px; padding-right: 12px; }
 
 /* ===== Resultats ===== */
 .winner-reveal { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) both; }
@@ -1400,9 +1434,18 @@ body.scoreboard-active #app { padding-top: 200px; }
      du CTA principal en dessous (VALIDER, ENVOYER...). Le texte doit rester
      traversable par la souris/le tactile, seul le X doit rester cliquable. */
   pointer-events: none;
-  animation: menu-pop-in 0.2s ease-out both;
+  animation: tip-bounce-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
-.tutorial-tip-icon { font-size: 1.3rem; flex-shrink: 0; }
+@keyframes tip-bounce-in {
+  0% { opacity: 0; transform: translateY(24px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.tutorial-tip-icon { font-size: 1.3rem; flex-shrink: 0; animation: tip-icon-bob 1.8s ease-in-out infinite; }
+@keyframes tip-icon-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-6deg); }
+}
 .tutorial-tip-text { flex: 1; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-0); }
 .tutorial-tip-close { background: none; border: none; color: var(--text-2); font-size: 1rem; cursor: pointer; flex-shrink: 0; padding: 4px; pointer-events: auto; }
 /* Petit ecran : texte wrap sur plus de lignes, la bulle grossit et

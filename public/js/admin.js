@@ -23,6 +23,7 @@ const Admin = {
   activityLog: [],
   scenarios: [],
   stats: null,
+  gifAvatars: [],
 };
 
 function adminEmit(event, payload) {
@@ -58,9 +59,11 @@ function renderAdmin() {
     case 'JOURNAL': root().innerHTML = viewJournal(); break;
     case 'SCENARIOS': root().innerHTML = viewScenarios(); break;
     case 'STATS': root().innerHTML = viewStats(); break;
+    case 'GIFAVATARS': root().innerHTML = viewGifAvatars(); break;
     case 'ADMINS': root().innerHTML = viewAdmins(); break;
     default: root().innerHTML = '<p>?</p>';
   }
+  applyEmojiOverridesIn(root());
 }
 
 function adminNav(active) {
@@ -74,6 +77,7 @@ function adminNav(active) {
     ['AUDIT', '📜 Journal admin'],
     ['JOURNAL', '🕵️ Journal joueurs'],
     ['SCENARIOS', '🤖 Bots tuto/démo'],
+    ['GIFAVATARS', '🎬 Avatars GIF'],
   ];
   if (Admin.role === 'superadmin') items.push(['ADMINS', '🛡️ Administrateurs']);
   return `<nav class="admin-nav">${items.map(([id, label]) =>
@@ -246,6 +250,31 @@ function viewStats() {
   </div>`;
 }
 
+function viewGifAvatars() {
+  const rows = Admin.gifAvatars.length
+    ? Admin.gifAvatars.map((id) => `
+      <li class="admin-card-row">
+        <div class="admin-card-main" style="flex-direction:row; align-items:center; gap:12px;">
+          <img src="assets/avatars/gif/${encodeURIComponent(id)}.gif" alt="${escapeHtmlClient(id)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+          <span class="admin-card-text">${escapeHtmlClient(id)}</span>
+        </div>
+        <button class="btn-kick" data-action="admin-delete-gif-avatar" data-id="${escapeHtmlClient(id)}">✕</button>
+      </li>`).join('')
+    : '<p class="hint">Aucun avatar GIF pour le moment.</p>';
+
+  return `
+  <div class="screen admin-screen">
+    ${adminNav('GIFAVATARS')}
+    <h2>Avatars GIF (${Admin.gifAvatars.length})</h2>
+    <p class="hint">Uploade ici des GIF que les joueurs pourront choisir comme avatar (onglet "GIF" à la création de partie). Vérifié côté serveur : signature binaire réelle, 5 Mo max, jamais exécuté.</p>
+    <div class="admin-toolbar">
+      <input type="file" id="gif-avatar-file-input" accept="image/gif" hidden />
+      <label class="btn btn-secondary admin-import-label" data-action="admin-pick-gif-avatar">📤 Uploader un GIF</label>
+    </div>
+    <ul class="admin-card-list">${rows}</ul>
+  </div>`;
+}
+
 function viewAdmins() {
   const rows = Admin.admins.map((a) => `
     <li class="admin-account-row">
@@ -320,6 +349,13 @@ function viewEditor() {
     <div class="chip-row">${packOptions}</div>
 
     ${Admin.currentPackId ? `
+      <div class="setting-row" style="align-items:flex-start;">
+        <label for="admin-pack-desc-input" class="hint" style="flex-shrink:0;">Description du pack :</label>
+        <input id="admin-pack-desc-input" class="text-input" type="text" maxlength="200"
+          value="${escapeHtmlClient((Admin.packs.find((p) => p.id === Admin.currentPackId) || {}).description || '')}"
+          placeholder="Visible par les joueurs au choix des packs..." />
+        <button class="btn-copy-code" data-action="admin-save-pack-description" data-pack="${Admin.currentPackId}">💾</button>
+      </div>
       <div class="admin-toolbar">
         <button class="btn btn-secondary" data-action="admin-add-card-open">➕ Ajouter une carte</button>
         <button class="btn btn-ghost" data-action="admin-export-pack">⬇️ Exporter JSON</button>
@@ -431,6 +467,15 @@ async function loadCommunity() {
 async function loadReports() {
   const res = await requireLoginOr(() => adminEmit('adminListReports'));
   if (res && res.ok) Admin.reports = res.reports;
+  renderAdmin();
+}
+
+async function loadGifAvatars() {
+  try {
+    const res = await fetch('/api/gif-avatars');
+    const data = await res.json();
+    Admin.gifAvatars = data.ids || [];
+  } catch (e) { /* liste inchangee */ }
   renderAdmin();
 }
 
@@ -624,6 +669,7 @@ const AdminActions = {
     if (Admin.view === 'AUDIT') return loadAudit();
     if (Admin.view === 'JOURNAL') return loadJournal();
     if (Admin.view === 'SCENARIOS') return loadScenarios();
+    if (Admin.view === 'GIFAVATARS') return loadGifAvatars();
     if (Admin.view === 'ADMINS') return loadAdmins();
     renderAdmin();
   },
@@ -631,6 +677,24 @@ const AdminActions = {
   'admin-refresh-stats': () => loadStats(),
   'admin-refresh-audit': () => loadAudit(),
   'admin-refresh-journal': () => loadJournal(),
+  'admin-pick-gif-avatar': () => {
+    document.getElementById('gif-avatar-file-input').click();
+  },
+  'admin-delete-gif-avatar': async (e, t) => {
+    const id = t.dataset.id;
+    const ok = await confirmModal({
+      title: `Supprimer l'avatar "${id}" ?`,
+      body: 'Les joueurs qui l\'utilisent actuellement garderont leur pseudo mais perdront cet avatar visuellement.',
+      confirmLabel: 'SUPPRIMER',
+      cancelLabel: 'ANNULER',
+      danger: true,
+    });
+    if (!ok) return;
+    const res = await requireLoginOr(() => adminEmit('adminDeleteGifAvatar', { id }));
+    if (!res || !res.ok) return toast((res && res.error) || 'Erreur.', 'error');
+    toast('Avatar supprimé.');
+    loadGifAvatars();
+  },
   'admin-locate-ip': async (e, t) => {
     const ip = t.dataset.ip;
     const entryId = t.dataset.entryId;
@@ -721,6 +785,15 @@ const AdminActions = {
   'admin-select-pack': async (e, t) => {
     Admin.currentPackId = t.dataset.pack;
     await loadCards(Admin.currentPackId);
+  },
+  'admin-save-pack-description': async (e, t) => {
+    const input = document.getElementById('admin-pack-desc-input');
+    const description = input ? input.value : '';
+    const res = await requireLoginOr(() => adminEmit('adminSetPackDescription', { packId: t.dataset.pack, description }));
+    if (!res || !res.ok) return toast((res && res.error) || 'Erreur.', 'error');
+    toast('Description enregistrée.');
+    await loadPacks();
+    renderAdmin();
   },
   'admin-add-scenario': async () => {
     const data = await scenarioPromptDialog(null);
@@ -893,6 +966,35 @@ document.addEventListener('DOMContentLoaded', () => {
       toast('Fichier JSON invalide.', 'error');
     }
     e.target.value = '';
+  });
+
+  root().addEventListener('change', async (e) => {
+    if (e.target.id !== 'gif-avatar-file-input') return;
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type && file.type !== 'image/gif' && !file.name.toLowerCase().endsWith('.gif')) {
+      toast('Seuls les fichiers .gif sont acceptés.', 'error');
+      e.target.value = '';
+      return;
+    }
+    const defaultId = file.name.replace(/\.gif$/i, '').replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 60) || 'avatar';
+    const id = prompt('Nom de cet avatar (lettres, chiffres, _ et - uniquement) :', defaultId);
+    e.target.value = '';
+    if (!id) return;
+    if (!/^[a-zA-Z0-9_-]{1,60}$/.test(id)) return toast('Nom invalide.', 'error');
+
+    const dataBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    }).catch(() => null);
+    if (!dataBase64) return toast('Lecture du fichier impossible.', 'error');
+
+    const res = await requireLoginOr(() => adminEmit('adminUploadGifAvatar', { id, dataBase64 }));
+    if (!res || !res.ok) return toast((res && res.error) || 'Erreur.', 'error');
+    toast('Avatar GIF ajouté !');
+    loadGifAvatars();
   });
 
   document.getElementById('admin-logout-btn').addEventListener('click', async () => {

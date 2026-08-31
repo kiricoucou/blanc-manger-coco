@@ -9,6 +9,7 @@ const db = require('./db');
 const appSettings = require('./appSettings');
 const practiceScenarios = require('./practiceScenarios');
 const siteStats = require('./siteStats');
+const gifAvatars = require('./gifAvatars');
 const { generateId } = require('./utils');
 
 const SESSION_TTL_MS = 4 * 60 * 60 * 1000; // 4h
@@ -263,6 +264,13 @@ const getPacks = requireAdmin((socket, payload, ack) => {
   ack({ ok: true, packs: cardManager.getPackMeta() });
 });
 
+const setPackDescription = withAudit('set_pack_description', (socket, payload, ack) => {
+  const packId = payload && payload.packId;
+  if (!cardManager.PACK_IDS.has(packId)) return ack({ ok: false, error: 'Pack inconnu.' });
+  const clean = appSettings.setPackDescription(packId, payload && payload.description);
+  ack({ ok: true, description: clean });
+});
+
 const listCards = requireAdmin((socket, payload, ack) => {
   const cards = cardManager.adminListCards(payload && payload.packId);
   if (!cards) return ack({ ok: false, error: 'Pack inconnu.' });
@@ -491,6 +499,45 @@ const geolocateIp = requireAdmin(async (socket, payload, ack, session) => {
   }
 });
 
+// ---------- Avatars GIF (upload admin) ----------
+// Canal : passe par la session admin deja authentifiee (requireAdmin, meme
+// garde que toutes les actions admin) et par la connexion Socket.IO du
+// site -- chiffree en transit des lors que le site tourne en HTTPS (voir
+// Strict-Transport-Security dans server.js), comme le reste du panel admin.
+// Pas de "canal" different a inventer : c'est le meme canal admin deja
+// protege, il n'y a pas de raison d'en ouvrir un second.
+//
+// Le fichier envoye n'est JAMAIS execute ni interprete cote serveur : il est
+// uniquement (1) valide par signature binaire reelle (magic bytes GIF, pas
+// l'extension ni le nom fournis par le client), (2) plafonne en taille,
+// (3) ecrit sous un nom entierement controle server-side (jamais le nom
+// client tel quel) dans un dossier dedie servi en fichier statique brut par
+// Express -- jamais require(), eval(), ni passe a un interpreteur quelconque.
+// C'est l'equivalent pratique d'un antivirus pour ce cas precis (un GIF ne
+// peut pas "s'executer" cote Node ; le risque reel est un fichier deguise
+// qui ne serait pas un GIF, ce que la verification de signature elimine).
+// Integrer un vrai moteur antivirus (ex. ClamAV) est possible en plus si
+// l'hebergeur le permet, mais nécessite une dépendance externe non presente
+// ici -- a activer separement si besoin.
+const uploadGifAvatar = withAudit('upload_gif_avatar', (socket, payload, ack) => {
+  const id = payload && payload.id;
+  const dataBase64 = payload && payload.dataBase64;
+  if (typeof dataBase64 !== 'string' || !dataBase64) {
+    return ack({ ok: false, error: 'Fichier manquant.' });
+  }
+  let buffer;
+  try {
+    buffer = Buffer.from(dataBase64, 'base64');
+  } catch (e) {
+    return ack({ ok: false, error: 'Fichier illisible.' });
+  }
+  ack(gifAvatars.saveGifAvatar(id, buffer));
+});
+
+const deleteGifAvatar = withAudit('delete_gif_avatar', (socket, payload, ack) => {
+  ack(gifAvatars.deleteGifAvatar(payload && payload.id));
+});
+
 // ---------- Stats globales (dashboard) ----------
 
 const getStats = requireAdmin((socket, payload, ack) => {
@@ -556,4 +603,7 @@ module.exports = {
   deletePracticeScenario,
   geolocateIp,
   getStats,
+  uploadGifAvatar,
+  deleteGifAvatar,
+  setPackDescription,
 };
