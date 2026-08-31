@@ -1143,6 +1143,20 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
   padding: 24px 22px;
   max-width: 360px;
   width: 100%;
+  /* Sans ca, une modale avec beaucoup de texte (ex. porte d'entree legale au
+     tout premier lancement) s'etire pour tout afficher d'un coup et finit
+     par occuper la quasi-totalite de la hauteur d'ecran sur mobile. Le
+     scroll se fait sur .modal-info-body (voir plus bas), PAS ici : mettre
+     overflow-y:auto directement sur cet element (qui a aussi "transform",
+     pour l'animation d'entree) declenchait un bug de compositing Chromium
+     -- le contenu de la page en dessous restait visible A TRAVERS la boite
+     malgre un background bien opaque (meme famille de bug que le fix
+     "perspective() dans transform" plus haut dans ce fichier). Isoler le
+     scroll sur un enfant non-transforme evite le probleme. */
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: var(--shadow-lg);
   transform: scale(0.9);
   transition: transform 0.2s ease;
@@ -1610,6 +1624,6 @@ body.scoreboard-active #app { padding-top: 200px; }
 .practice-role-row { justify-content: center; margin-bottom: 4px; }
 .practice-role-chip { font-size: 1rem; padding: 12px 20px; }
 
-.modal-info-body { text-align: left; }
+.modal-info-body { text-align: left; overflow-y: auto; min-height: 0; flex: 1 1 auto; }
 .modal-info-body p { margin: 0 0 10px; }
 .modal-info-body p:last-child { margin-bottom: 0; }
