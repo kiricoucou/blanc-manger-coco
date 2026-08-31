@@ -67,7 +67,23 @@
       </div>
       <button id="font-size-toggle" aria-label="Taille du texte" title="Taille du texte">Aa</button>
       <button id="theme-toggle" aria-label="Basculer theme clair/sombre" title="Theme">🌙</button>
-      <button id="sound-toggle" aria-label="Activer ou couper le son" title="Son">🔊</button>
+      <div class="sound-wrap">
+        <button id="sound-toggle" aria-label="Réglages du son" title="Son" aria-expanded="false">🔊</button>
+        <div id="sound-detail-panel" class="wifi-detail-panel" hidden role="dialog" aria-label="Réglages du son">
+          <label class="modal-checkbox-row" style="margin:0 0 10px;">
+            <input type="checkbox" id="sound-mute-checkbox" />
+            <span>Couper tout le son</span>
+          </label>
+          <div class="setting-block" style="margin-bottom:8px;">
+            <span class="setting-label">🔔 Bips <b id="sfx-volume-value">70%</b></span>
+            <input type="range" min="0" max="100" step="5" id="sfx-volume-slider" class="range-input" />
+          </div>
+          <div class="setting-block">
+            <span class="setting-label">🎵 Musique de fond <b id="music-volume-value">35%</b></span>
+            <input type="range" min="0" max="100" step="5" id="music-volume-slider" class="range-input" />
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 

@@ -298,7 +298,7 @@ button, input {
 .wifi-pending .wifi-bar-3 { animation-delay: 0.3s; }
 @keyframes wifi-pending-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.9; } }
 
-.wifi-wrap { position: relative; }
+.wifi-wrap, .sound-wrap { position: relative; }
 .wifi-indicator { cursor: pointer; font-family: inherit; appearance: none; margin: 0; color: inherit; }
 .wifi-score {
   font-size: 0.65rem;

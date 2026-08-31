@@ -229,6 +229,14 @@ const MusicFX = (() => {
     return ctx;
   }
 
+  // Volume cible de la nappe : 0.05 est le plein volume "historique" (avant
+  // l'ajout du reglage), le curseur (AppState.musicVolume, 0-1) module autour
+  // de cette base plutot que d'aller jusqu'a 1.0 (sinon bien trop fort).
+  const BASE_GAIN = 0.05;
+  function targetGain() {
+    return BASE_GAIN * (AppState.musicVolume != null ? AppState.musicVolume : 1);
+  }
+
   function start() {
     if (playing || !AppState.soundOn) return;
     try {
@@ -236,7 +244,7 @@ const MusicFX = (() => {
       const master = c.createGain();
       master.gain.value = 0;
       master.connect(c.destination);
-      master.gain.linearRampToValueAtTime(0.05, c.currentTime + 1.2);
+      master.gain.linearRampToValueAtTime(targetGain(), c.currentTime + 1.2);
 
       const filter = c.createBiquadFilter();
       filter.type = 'lowpass';
@@ -281,7 +289,16 @@ const MusicFX = (() => {
     playing = false;
   }
 
-  return { start, stop, get playing() { return playing; } };
+  // Applique en direct un changement du curseur "Musique" pendant que la
+  // nappe joue deja (sinon il faudrait arreter/relancer pour que le
+  // changement se voie, coupure moche a chaque glissement du curseur).
+  function setVolume() {
+    if (!playing || !nodes) return;
+    const c = getCtx();
+    nodes.master.gain.linearRampToValueAtTime(targetGain(), c.currentTime + 0.15);
+  }
+
+  return { start, stop, setVolume, get playing() { return playing; } };
 })();
 
 // Petit lecteur de sons synthetises (pas de fichiers requis, marche toujours).
@@ -293,13 +310,15 @@ const SoundFX = (() => {
   }
   function beep(freq, duration, type) {
     if (!AppState.soundOn) return;
+    const vol = AppState.sfxVolume != null ? AppState.sfxVolume : 1;
+    if (vol <= 0) return; // exponentialRampToValueAtTime ne peut pas partir de 0
     try {
       const c = getCtx();
       const osc = c.createOscillator();
       const gain = c.createGain();
       osc.type = type || 'sine';
       osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.08, c.currentTime);
+      gain.gain.setValueAtTime(0.08 * vol, c.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + duration);
       osc.connect(gain).connect(c.destination);
       osc.start();

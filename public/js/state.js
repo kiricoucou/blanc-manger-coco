@@ -34,6 +34,8 @@ const AppState = {
   judgingIndex: 0,
   judgingReactions: {}, // index -> 'like' | 'dislike', purement local (aide visuelle du juge)
   soundOn: true,
+  sfxVolume: 0.7, // volume des bips (SoundFX), 0-1
+  musicVolume: 0.35, // volume de la musique de fond en boucle (MusicFX), 0-1
 
   // Packs de cartes disponibles (recharges depuis /api/packs au demarrage).
   packMeta: [],

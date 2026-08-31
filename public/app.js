@@ -181,11 +181,15 @@ render = function patchedRender() {
   baseRender();
   applyEmojiOverridesIn(document.getElementById('app'));
 
-  const inCreateFlow = !AppState.gameCode && CREATE_MUSIC_SCREENS.has(AppState.localFlow);
-  if (inCreateFlow && !MusicFX.playing) MusicFX.start();
-  if (!inCreateFlow && MusicFX.playing) MusicFX.stop();
-
+  // Musique d'ambiance : menus (accueil + creation) et salon d'attente avant
+  // le lancement -- coupee des qu'une manche demarre pour de vrai (pas de
+  // nappe pendant qu'on ecrit une reponse ou qu'on juge).
   const s = AppState.publicState;
+  const inMusicScreen = (!AppState.gameCode && (AppState.localFlow === 'HOME' || CREATE_MUSIC_SCREENS.has(AppState.localFlow)))
+    || (s && s.state === 'LOBBY');
+  if (AppState.soundOn && inMusicScreen && !MusicFX.playing) MusicFX.start();
+  if ((!AppState.soundOn || !inMusicScreen) && MusicFX.playing) MusicFX.stop();
+
   const currentState = s ? s.state : (AppState.localFlow === 'CODE_REVEAL' ? 'CODE_REVEAL' : null);
 
   if (currentState !== lastRenderedState) {
@@ -912,12 +916,70 @@ document.addEventListener('DOMContentLoaded', async () => {
   // installe laisse ouvert des heures/jours sans jamais recharger seul).
   setInterval(checkForUpdate, 3 * 60 * 1000);
 
-  document.getElementById('sound-toggle').addEventListener('click', () => {
-    AppState.soundOn = !AppState.soundOn;
-    document.getElementById('sound-toggle').textContent = AppState.soundOn ? '🔊' : '🔇';
-    if (!AppState.soundOn) MusicFX.stop();
-    else if (CREATE_MUSIC_SCREENS.has(AppState.localFlow) && !AppState.gameCode) MusicFX.start();
-  });
+  // Reglages son : bouton ouvre un panneau (comme l'indicateur wifi) plutot
+  // que de couper directement — un clic accidentel ne coupe plus tout le
+  // son, et les 2 curseurs (bips / musique) sont regles separement.
+  (() => {
+    const btn = document.getElementById('sound-toggle');
+    const panel = document.getElementById('sound-detail-panel');
+    const muteCb = document.getElementById('sound-mute-checkbox');
+    const sfxSlider = document.getElementById('sfx-volume-slider');
+    const musicSlider = document.getElementById('music-volume-slider');
+    const sfxValueEl = document.getElementById('sfx-volume-value');
+    const musicValueEl = document.getElementById('music-volume-value');
+
+    let sfxVol = 70, musicVol = 35, muted = false;
+    try {
+      const savedSfx = localStorage.getItem('blancManger.sfxVolume');
+      const savedMusic = localStorage.getItem('blancManger.musicVolume');
+      const savedMuted = localStorage.getItem('blancManger.soundMuted');
+      if (savedSfx !== null) sfxVol = Number(savedSfx);
+      if (savedMusic !== null) musicVol = Number(savedMusic);
+      if (savedMuted !== null) muted = savedMuted === '1';
+    } catch (e) { /* ignore */ }
+
+    function applyState() {
+      AppState.soundOn = !muted;
+      AppState.sfxVolume = sfxVol / 100;
+      AppState.musicVolume = musicVol / 100;
+      btn.textContent = muted ? '🔇' : '🔊';
+      muteCb.checked = muted;
+      sfxSlider.value = sfxVol;
+      musicSlider.value = musicVol;
+      sfxValueEl.textContent = sfxVol + '%';
+      musicValueEl.textContent = musicVol + '%';
+      if (muted) MusicFX.stop();
+      else {
+        MusicFX.setVolume();
+        if (!MusicFX.playing && CREATE_MUSIC_SCREENS.has(AppState.localFlow) && !AppState.gameCode) MusicFX.start();
+      }
+    }
+    applyState();
+
+    function persist() {
+      try {
+        localStorage.setItem('blancManger.sfxVolume', String(sfxVol));
+        localStorage.setItem('blancManger.musicVolume', String(musicVol));
+        localStorage.setItem('blancManger.soundMuted', muted ? '1' : '0');
+      } catch (e) { /* ignore */ }
+    }
+
+    function togglePanel(forceOpen) {
+      const open = forceOpen !== undefined ? forceOpen : panel.hidden;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    }
+    btn.addEventListener('click', () => togglePanel());
+    document.addEventListener('click', (e) => {
+      if (panel.hidden) return;
+      if (e.target === btn || btn.contains(e.target) || panel.contains(e.target)) return;
+      togglePanel(false);
+    });
+
+    muteCb.addEventListener('change', () => { muted = muteCb.checked; applyState(); persist(); });
+    sfxSlider.addEventListener('input', () => { sfxVol = Number(sfxSlider.value); applyState(); persist(); });
+    musicSlider.addEventListener('input', () => { musicVol = Number(musicSlider.value); applyState(); persist(); });
+  })();
 
   // Theme clair/sombre, persiste dans localStorage.
   const themeBtn = document.getElementById('theme-toggle');
