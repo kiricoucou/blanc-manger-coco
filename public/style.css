@@ -611,13 +611,18 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
 /* Avatar GIF affiche partout dans le jeu (liste de joueurs, classement,
    ecran de victoire...) : "em" pour suivre la taille de police du contexte
    sans regle dediee a chaque emplacement (meme principe qu'un emoji inline). */
-.avatar-gif { width: 1.15em; height: 1.15em; object-fit: cover; border-radius: 50%; vertical-align: -0.2em; }
+/* margin left/right : un GIF colle directement au texte voisin (ex.
+   "{gif}texte") est illisible/trop serre -- espace systematique des deux
+   cotes, quel que soit l'endroit du site ou le GIF apparait (30+ emplacements
+   different : liste de joueurs, chat, classement, boutons...), sans avoir a
+   retoucher chaque appel un par un. */
+.avatar-gif { width: 1.15em; height: 1.15em; object-fit: cover; border-radius: 50%; vertical-align: -0.2em; margin: 0 0.25em; }
 
 /* Emoji decoratif remplace par un GIF (public/js/emojiOverrides.js) : suit
    la taille de police du contexte, comme l'emoji qu'il remplace. Pas
    d'arrondi/cover ici contrairement a .avatar-gif : ce n'est pas un visage
    dans un cercle, juste une icone, mieux vaut la montrer entiere. */
-.emoji-gif { width: 1em; height: 1em; object-fit: contain; vertical-align: -0.15em; display: inline-block; }
+.emoji-gif { width: 1em; height: 1em; object-fit: contain; vertical-align: -0.15em; display: inline-block; margin: 0 0.25em; }
 
 .avatar-tabs { display: flex; gap: 8px; margin: 4px 0 6px; }
 .avatar-tab-btn {
