@@ -1,0 +1,9 @@
+node_modules/
+*.log
+.DS_Store
+.claude/
+# app.db volontairement exclu meme si .env ne l'est plus : contient des
+# donnees d'autres personnes (hash admin, comptes joueurs, IP du journal
+# d'activite), pas seulement les secrets operationnels du proprietaire.
+data/app.db
+data/app.db-*

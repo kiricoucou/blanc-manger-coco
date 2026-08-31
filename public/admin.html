@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin — Ça va mal finir</title>
+<link rel="icon" href="assets/brand/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div id="bg-fx" aria-hidden="true"></div>
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+  <header id="top-bar">
+    <div id="top-bar-code">
+      🛠️ ADMIN
+      <span id="server-version-tag" class="server-version-tag"></span>
+    </div>
+    <div id="top-bar-right">
+      <button id="purge-cache-btn" class="btn-copy-code" title="Vide le cache JS/CSS de ce navigateur et recharge">🧹 Purger le cache</button>
+      <button id="admin-logout-btn" class="btn-copy-code" hidden>Déconnexion</button>
+    </div>
+  </header>
+
+  <main id="admin-app" role="main"></main>
+
+  <div id="toast-root" aria-live="polite"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

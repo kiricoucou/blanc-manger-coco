@@ -1,0 +1,542 @@
+
+[
+  {
+    "text": "Si j'accepte, ______. C'est uniquement pas pour me faire draguer.",
+    "blanks": 1
+  },
+  {
+    "text": "Revoir son ex, évoquer ______, c'est risqué.",
+    "blanks": 1
+  },
+  {
+    "text": "______ c'est souvent le calme avant la tempête.",
+    "blanks": 1
+  },
+  {
+    "text": "C'est ______ qui nous réunit aujourd'hui pour célébrer Sarah et Sébastien.",
+    "blanks": 1
+  },
+  {
+    "text": "Hé Nicole, ______, et vite, sinon je t'en colle une.",
+    "blanks": 1
+  },
+  {
+    "text": "On marchait dans la forêt et on a découvert ______, comme par enchantement.",
+    "blanks": 1
+  },
+  {
+    "text": "______, tranquillou bilou.",
+    "blanks": 1
+  },
+  {
+    "text": "À 75 ans, ______, c'est un peu tard.",
+    "blanks": 1
+  },
+  {
+    "text": "______, tout en douceur, ______, juste pour mon cœur.",
+    "blanks": 2
+  },
+  {
+    "text": "______ et ______ sont les valeurs cardinales que j'impose au sein de mon foyer.",
+    "blanks": 2
+  },
+  {
+    "text": "L'expression ______, c'est juste nous tout craché.",
+    "blanks": 1
+  },
+  {
+    "text": "______ ? Non, tu fais erreur, tu confonds avec mon ex.",
+    "blanks": 1
+  },
+  {
+    "text": "______, tu en aurais besoin, et surtout notre couple en aurait besoin.",
+    "blanks": 1
+  },
+  {
+    "text": "______ c'est dégradant pour la femme.",
+    "blanks": 1
+  },
+
+  {
+    "text": "C'est que ______ lui fait plaisir, fait un effort.",
+    "blanks": 1
+  },
+  {
+    "text": "______ a été mentionné trois fois dans le discours de mariage de l'adjoint du maire.",
+    "blanks": 1
+  },
+  {
+    "text": "Notre couple va crescendo. Noces de coton, ______. Noces de porcelaine, ______. Et noces d'or, ______.",
+    "blanks": 3
+  },
+  {
+    "text": "Ma nouvelle copine a fait connaissance avec ______ hier soir.",
+    "blanks": 1
+  },
+  {
+    "text": "Laisse-toi envahir par la plénitude, sans venir, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je l'y donne, ______, parce qu'il est beau.",
+    "blanks": 1
+  },
+  {
+    "text": "Comme seule perspective, c'est ce qui me force à rester en couple.",
+    "blanks": 0
+  },
+  {
+    "text": "Médée est une tragédie grecque d'Euripide mettant en scène ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, après trois jours de relation, c'est normal.",
+    "blanks": 1
+  },
+  {
+    "text": "______, c'est l'amour, avec un grand A.",
+    "blanks": 1
+  },
+  {
+    "text": "Je sais pas si c'est Cupidon ou ______ qui m'a rendu folle amoureuse de toi.",
+    "blanks": 1
+  },
+  {
+    "text": "Je suis OK pour ______, si et seulement si elle est OK pour ______.",
+    "blanks": 2
+  },
+  {
+    "text": "Elle est de gauche et pourtant elle aime ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Il est de droite et pourtant il aime ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Ses performances au lit ne sont pas extraordinaires. Faut dire que ______, ça aide pas non plus.",
+    "blanks": 1
+  },
+  {
+    "text": "______, et tu te trouves dans la merde.",
+    "blanks": 1
+  },
+  {
+    "text": "Quand mes amis parlent de toi, ils finissent toujours par évoquer ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Pour ______, tu verras ça avec mon avocat.",
+    "blanks": 1
+  },
+  {
+    "text": "______, mais ça fait des fleurs, ça passe.",
+    "blanks": 1
+  },
+  {
+    "text": "Pense à nos enfants, qu'est-ce qu'ils vont en penser en voyant ______ ?",
+    "blanks": 1
+  },
+  {
+    "text": "On s'est disputés. Elle voulait ______ et moi ______.",
+    "blanks": 2
+  },
+  {
+    "text": "Au début, c'était ______, mais après, ça a changé.",
+    "blanks": 1
+  },
+  {
+    "text": "______ m'a permis de reprendre espoir, ou un moment où ça n'allait pas trop dans ma vie.",
+    "blanks": 1
+  },
+  {
+    "text": "______, j'en ai appris le sens que je t'ai vu pour la première fois.",
+    "blanks": 1
+  },
+  {
+    "text": "Tel Roméo au pied du balcon de Juliette, je louais ______ avec ferveur et ébriété.",
+    "blanks": 1
+  },
+  {
+    "text": "Mon mec a eu un ouf de soulagement quand il a vu ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______ n'est pas si mal reproché dans ma vie de couple.",
+    "blanks": 1
+  },
+  {
+    "text": "Il y a eu ______ et ça a tout de suite été le coup de foudre.",
+    "blanks": 1
+  },
+
+  {
+    "text": "Chérie, j'ai une bonne et une mauvaise nouvelle. La bonne, ______. La mauvaise, ______.",
+    "blanks": 2
+  },
+  {
+    "text": "______, ça a remonté ma cote de popularité auprès de la gent masculine.",
+    "blanks": 1
+  },
+  {
+    "text": "Pour la Saint-Valentin, dites-lui « Je t'aime » avec ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je suis fébrile en amour, ______ me fraye un tantinet.",
+    "blanks": 1
+  },
+  {
+    "text": "______ a fait de notre mariage le plus beau jour de ma vie.",
+    "blanks": 1
+  },
+  {
+    "text": "Ta grand-mère n'a pas aimé ______. Tu lui demanderas plus d'explications.",
+    "blanks": 1
+  },
+  {
+    "text": "Il n'a pas compris mes avances. Pourtant, ______, ça en dit long sur mes intentions, non ?",
+    "blanks": 1
+  },
+  {
+    "text": "Quand je tombe sur ______ sur Tinder, je swipe tout de suite à droite.",
+    "blanks": 1
+  },
+  {
+    "text": "Si je change de partenaire, ce sera pour ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Ça fait partie des trucs qu'on fait mieux à deux : ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je retrouve ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je retrouve Go à la vie.",
+    "blanks": 0
+  },
+  {
+    "text": "Je lui ai écrit un poème d'amour. Le titre, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je lui ai écrit un livre. Le titre, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Même pour ______, tu as la flemme. Tu es une loque.",
+    "blanks": 1
+  },
+  {
+    "text": "______, et lui dire « je t'aime ».",
+    "blanks": 1
+  },
+  {
+    "text": "______ : ça fait un bon nouveau sujet de conversation après trente ans de mariage.",
+    "blanks": 1
+  },
+  {
+    "text": "On s'était donné rendez-vous au café. Je l'ai vu arriver, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je t'ai tout de suite reconnu. ______, c'est méga relou quand même.",
+    "blanks": 1
+  },
+  {
+    "text": "______, ça te pend au nez, cher ami.",
+    "blanks": 1
+  },
+  {
+    "text": "______, quand j'y repense, je me dis : bon débarras.",
+    "blanks": 1
+  },
+  {
+    "text": "______ renforce notre amour.",
+    "blanks": 1
+  },
+  {
+    "text": "Pas d'échappatoire, ______ est un sujet d'engueulade permanent.",
+    "blanks": 1
+  },
+  {
+    "text": "Ce qui me manque avec cette relation longue distance, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je ne suis ni hétéro ni homo, j'aime ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, si Dieu le veut.",
+    "blanks": 1
+  },
+  {
+    "text": "En SVT, on a eu le premier cours sur la sexualité. On a commencé par ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, c'est l'histoire de la vie, le cycle éternel.",
+    "blanks": 1
+  },
+  {
+    "text": "______ est le truc le plus intelligent que j'ai trouvé à faire pendant l'accouchement.",
+    "blanks": 1
+  },
+  {
+    "text": "Et toi, Michel, qu'est-ce qu'ils font tes parents ? Ma mère, ______, et mon père, ______.",
+    "blanks": 2
+  },
+  {
+    "text": "Le partage des tâches, ça vaut pour ______, mais pas pour ______.",
+    "blanks": 2
+  },
+  {
+    "text": "Les hommes en amour, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Les femmes en amour, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Mamie, dans votre précédente missive, vous évoquiez ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je suis d'accord avec vous. L'exception, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Le quotidien, ______.",
+    "blanks": 1
+  },
+  {
+    "text": "C'est pas tant ______ que ______ qui me fait rester avec elle.",
+    "blanks": 2
+  },
+  {
+    "text": "Offrir des fleurs sur l'échelle du romantisme, c'est entre ______ et ______.",
+    "blanks": 2
+  },
+  {
+    "text": "J'ai claqué beaucoup d'argent pour ______. J'espère qu'elle va aimer.",
+    "blanks": 1
+  },
+  {
+    "text": "Je vais te faire accepter ______, de gré ou de force.",
+    "blanks": 1
+  },
+  {
+    "text": "______, j'y crois dur comme fer.",
+    "blanks": 1
+  },
+  {
+    "text": "Pour la soirée échangiste chez les voisins, nous sommes venus avec ______ pour apporter un brin de folie.",
+    "blanks": 1
+  },
+  {
+    "text": "______, seul, faut reconnaître que c'est moins bien.",
+    "blanks": 1
+  },
+  {
+    "text": "La musique, les pétales de rose sur le lit, les bougies, ______. Tout est prêt pour ce soir.",
+    "blanks": 1
+  },
+  {
+    "text": "______ n'est pas trompé.",
+    "blanks": 1
+  },
+  {
+    "text": "Je préfère qu'on ne brusque pas les choses dans notre relation. D'abord ______, ensuite ______ et enfin ______.",
+    "blanks": 3
+  },
+  {
+    "text": "S'il te plaît, ______, arrête.",
+    "blanks": 1
+  },
+  {
+    "text": "Visage 8 sur 10, Q 7 sur 10, ______ 2 sur 10.",
+    "blanks": 1
+  },
+  {
+    "text": "Je sens que je vais conclure. ______.",
+    "blanks": 1
+  },
+  {
+    "text": "On s'entend bien avec ma belle-mère, ______. Ne pose pas de problème.",
+    "blanks": 1
+  },
+  {
+    "text": "Je suis pas la moitié parfaite. Je sais que ______ lui fait toujours plaisir.",
+    "blanks": 1
+  },
+  {
+    "text": "Pupuce, ______ est la plus belle chose que tu aies faite pour moi jusqu'à présent.",
+    "blanks": 1
+  },
+  {
+    "text": "______ a fait hausser un sourcil à mon beau-père.",
+    "blanks": 1
+  },
+  {
+    "text": "Photo représentant ______ à Dakar en 1923.",
+    "blanks": 1
+  },
+  {
+    "text": "Après ______, on avait du mal à voir si c'étaient des larmes de joie ou de tristesse qu'il avait.",
+    "blanks": 1
+  },
+  {
+    "text": "L'adolescence ne l'a pas épargné. Il supporte mal ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, ça n'aurait pas posé de problème après ses 14 ans.",
+    "blanks": 1
+  },
+  {
+    "text": "Je vous déclare mari et femme pour ______ et ______.",
+    "blanks": 2
+  },
+  {
+    "text": "En passant outre ______, je suis heureux de t'avoir rencontrée.",
+    "blanks": 1
+  },
+  {
+    "text": "______ est problématique pour qu'on aille plus loin dans notre relation.",
+    "blanks": 1
+  },
+  {
+    "text": "Un grand complice, un regard complice, lui prendre délicatement la main, ______ : c'est à ce moment-là que tu l'embrasses.",
+    "blanks": 1
+  },
+  {
+    "text": "Je t'offre tout mon amour. Je t'offre ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, pendant que je prépare le petit déjeuner, ça ne me choque pas.",
+    "blanks": 1
+  },
+  {
+    "text": "Si je mets bout à bout ______ et ______, elle me coûte un bras.",
+    "blanks": 2
+  },
+  {
+    "text": "Il y a deux siècles, elle n'était pas très, très bien vue. Maintenant, ça va.",
+    "blanks": 0
+  },
+  {
+    "text": "La seule chose qu'elle ne faisait pas avec moi, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______ et ______, ça rime.",
+    "blanks": 2
+  },
+  {
+    "text": "______, je lui ai demandé gentiment, mais c'est la dernière fois.",
+    "blanks": 1
+  },
+  {
+    "text": "C'est pendant ______ que j'ai fait ma demande.",
+    "blanks": 1
+  },
+  {
+    "text": "Avec toi, j'arrive à sentir ______ et à oublier ______.",
+    "blanks": 2
+  },
+  {
+    "text": "L'éléphant dans la pièce au début de notre relation, c'était ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Sans l'alcool, nous ne nous serions jamais connus. ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, tu t'y fais finalement, tu vois.",
+    "blanks": 1
+  },
+  {
+    "text": "______, c'est le prix qu'il croyait prendre.",
+    "blanks": 1
+  },
+  {
+    "text": "La vision de la famille dans le bouddhisme, c'est ______ et l'harmonie.",
+    "blanks": 1
+  },
+  {
+    "text": "Je préfère ne pas évoquer ______ avec mes collègues.",
+    "blanks": 1
+  },
+  {
+    "text": "______ ne nuit pas à la libido, bien au contraire.",
+    "blanks": 1
+  },
+  {
+    "text": "Ma toute première fois, c'était à 16 ans. Ce dont je me rappelle le mieux, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Ça fait dix minutes qu'on se connaît. Je pense que ______ est un peu prématuré.",
+    "blanks": 1
+  },
+  {
+    "text": "Je fais de l'ordre dans ma vie amoureuse. Fini ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Allongez-vous sur le divan et parlez-moi de votre relation. Commençons par ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, je l'ai fait en bon père de famille.",
+    "blanks": 1
+  },
+  {
+    "text": "______ était sûrement notre seul point commun quand on s'est connus.",
+    "blanks": 1
+  },
+  {
+    "text": "Je sais que si je t'épouse, j'épouse aussi ______.",
+    "blanks": 1
+  },
+  {
+    "text": "On a cassé notre PEL pour ______ et je regrette un peu.",
+    "blanks": 1
+  },
+  {
+    "text": "Dix ans que je te connais, dix ans à ______.",
+    "blanks": 1
+  },
+  {
+    "text": "On a tenu dix ans ensemble, mais ______, on aurait eu raison de nous.",
+    "blanks": 1
+  },
+  {
+    "text": "Tu es face à l'hôtel, tu te retournes, et la première chose que tu vois, c'est ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je vais te raconter comment j'ai rencontré ton papa. Tout a commencé avec ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Chérie, tu sais bien qu'il y a ______.",
+    "blanks": 1
+  },
+  {
+    "text": "Je ne serai pas là ce soir. Jeudi, on va chez le notaire pour ______.",
+    "blanks": 1
+  },
+  {
+    "text": "______, c'est à quel moment déjà de La Belle au bois dormant ?",
+    "blanks": 1
+  }
+]
+

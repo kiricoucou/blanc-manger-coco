@@ -1,0 +1,133 @@
+#top-bar-code { display: flex; align-items: baseline; gap: 8px; }
+#top-bar-code .server-version-tag { margin-top: 0; }
+
+#admin-app {
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 18px 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-screen { align-items: stretch; text-align: left; gap: 14px; }
+.admin-screen h2 { text-align: center; }
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.admin-nav-btn {
+  background: var(--surface);
+  color: var(--text-1);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.admin-nav-active { border-color: var(--pink); color: var(--text-0); }
+
+.admin-game-list, .admin-card-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.admin-game-row, .admin-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+.admin-game-info { display: flex; flex-direction: column; gap: 4px; }
+.admin-game-code { font-weight: 900; letter-spacing: 2px; color: var(--gold); }
+.admin-game-actions, .admin-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.admin-card-text { flex: 1; word-break: break-word; }
+.admin-card-row-stacked { align-items: flex-start; }
+.admin-card-main { display: flex; flex-direction: column; gap: 4px; flex: 1; text-align: left; }
+.admin-card-meta { font-size: 0.78rem; }
+
+.admin-toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
+.admin-toolbar .btn { width: auto; }
+.admin-import-label { display: inline-flex; align-items: center; cursor: pointer; }
+.admin-textarea { max-width: 100%; min-height: 100px; resize: vertical; text-align: left; }
+.admin-card-preview-stage { margin: 10px auto; max-width: 300px; min-height: 140px; }
+
+@media (min-width: 640px) {
+  .admin-game-row, .admin-card-row { flex-wrap: nowrap; }
+}
+
+.admin-game-players { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-direction: column; gap: 2px; }
+
+.admin-audit-list, .admin-account-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.admin-audit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+.admin-audit-when { flex-shrink: 0; }
+.admin-audit-who { font-weight: 800; color: var(--gold); }
+.admin-audit-action { font-weight: 700; }
+
+.admin-setting-block {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.admin-setting-block label { font-weight: 700; }
+.admin-setting-block input[type="range"] { width: 100%; }
+
+.admin-locate-result { width: 100%; margin-top: 6px; }
+.admin-locate-map {
+  width: 100%;
+  height: 220px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+
+.admin-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+.admin-account-row > span:first-child { flex: 1; font-weight: 700; }
+
+.admin-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.admin-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 14px 10px;
+  text-align: center;
+}
+.admin-stat-emoji { font-size: 1.4rem; }
+.admin-stat-value { font-size: 1.6rem; font-weight: 900; color: var(--gold); }
+.admin-stat-label { font-size: 0.75rem; color: var(--text-2); }
+
+.admin-bar-chart { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.admin-bar-row { display: flex; align-items: center; gap: 10px; }
+.admin-bar-label { width: 38%; flex-shrink: 0; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-bar-track { flex: 1; height: 16px; background: var(--surface); border-radius: 999px; overflow: hidden; }
+.admin-bar-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--gold)); border-radius: 999px; }
+.admin-bar-value { flex-shrink: 0; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+
+.admin-nickname-cloud { display: flex; flex-wrap: wrap; gap: 6px; }

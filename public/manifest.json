@@ -1,0 +1,17 @@
+{
+  "name": "Ça va mal finir",
+  "short_name": "CVMF",
+  "description": "Le jeu de cartes ou tes potes vont regretter leurs reponses.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0a0d",
+  "theme_color": "#0c0a0d",
+  "lang": "fr",
+  "icons": [
+    { "src": "assets/brand/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/brand/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/brand/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

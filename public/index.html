@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0a0d" />
+<title>Ça va mal finir — Le jeu de cartes qui déraille</title>
+<link rel="icon" href="assets/brand/logo.png" />
+<link rel="apple-touch-icon" href="assets/brand/logo.png" />
+<link rel="manifest" href="manifest.json" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Ça va mal finir" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Epilogue:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="loading-screen" role="status" aria-label="Chargement">
+    <img id="loading-logo" src="assets/brand/logo.png" alt="Ça va mal finir" />
+    <div class="loading-bar-track">
+      <div id="loading-bar-fill" class="loading-bar-fill"></div>
+    </div>
+    <p class="loading-text">Chargement...</p>
+  </div>
+
+  <div id="bg-fx" aria-hidden="true"></div>
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+  <header id="top-bar">
+    <div id="top-bar-left">
+      <button id="logo-home-btn" class="logo-home-btn" data-action="back-to-menu" aria-label="Retour à l'accueil">
+        <img src="assets/brand/logo.png" alt="Ça va mal finir" />
+      </button>
+      <button id="game-menu-toggle" class="game-menu-toggle" aria-label="Menu de la partie" aria-expanded="false" hidden>☰</button>
+      <div id="top-bar-code-block" class="top-bar-code-block" hidden>
+        <span class="top-bar-code-label">Code :</span>
+        <span id="top-bar-code-value" class="top-bar-code-value"></span>
+        <button class="btn-copy-code" data-action="copy-code" aria-label="Copier le code">📋</button>
+        <button class="btn-copy-code" data-action="copy-link" aria-label="Copier le lien d'invitation">🔗</button>
+      </div>
+    </div>
+    <div id="game-menu-panel" class="game-menu-panel" hidden role="menu">
+      <button class="game-menu-item" data-action="leave-game" role="menuitem">🚪 Quitter la partie</button>
+      <button class="game-menu-item" data-action="back-to-menu" role="menuitem">🏠 Retour au menu</button>
+    </div>
+    <div id="top-bar-right">
+      <div class="wifi-wrap">
+        <button id="wifi-indicator" class="wifi-indicator wifi-pending" type="button" aria-label="Qualité de connexion" aria-expanded="false">
+          <span class="wifi-bar wifi-bar-1"></span>
+          <span class="wifi-bar wifi-bar-2"></span>
+          <span class="wifi-bar wifi-bar-3"></span>
+          <span id="wifi-score" class="wifi-score">Calcul en cours</span>
+        </button>
+        <div id="wifi-detail-panel" class="wifi-detail-panel" hidden role="dialog" aria-label="Détail de la connexion">
+          <div class="wifi-detail-head">
+            <span id="wifi-detail-label">Qualité de connexion</span>
+            <span id="wifi-detail-score" class="wifi-detail-score">–/20</span>
+          </div>
+          <svg id="wifi-graph" class="wifi-graph" viewBox="0 0 160 40" preserveAspectRatio="none" aria-hidden="true">
+            <polyline id="wifi-graph-line" points="" />
+          </svg>
+          <div id="wifi-detail-ms" class="wifi-detail-ms">– ms</div>
+        </div>
+      </div>
+      <button id="font-size-toggle" aria-label="Taille du texte" title="Taille du texte">Aa</button>
+      <button id="theme-toggle" aria-label="Basculer theme clair/sombre" title="Theme">🌙</button>
+      <button id="sound-toggle" aria-label="Activer ou couper le son" title="Son">🔊</button>
+    </div>
+  </header>
+
+  <main id="app" role="main"></main>
+  <div id="scoreboard-root"></div>
+  <div id="tutorial-tip-root"></div>
+
+  <div id="toast-root" aria-live="polite"></div>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+  <div id="chat-root"></div>
+
+  <template id="tpl-none"></template>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/cardImage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/timers.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/push.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/scoreboard.js"></script>
+  <script src="js/tutorialtips.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

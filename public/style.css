@@ -1,0 +1,1577 @@
+/* ===== Design tokens ===== */
+:root {
+  /* Palette extraite du logo "Ca va mal finir" (noir, rouge, or, bleu/violet),
+     desaturee par rapport aux teintes neon d'origine : memes teintes, moins
+     criardes, pour un rendu plus sobre/pro. */
+  --bg-0: #0c0a0d;
+  --bg-1: #160f11;
+  --bg-2: #201316;
+  --surface: #1b1315;
+  --surface-2: #281a1c;
+  --pink: #c2434a;
+  --pink-2: #d97b74;
+  --gold: #cc9a4a;
+  --cyan: #5c56b0;
+  --violet: #6e54ad;
+  --green: #5cae7c;
+  --red: #cc6360;
+  --text-0: #f7f0ee;
+  --text-1: #d9c7c4;
+  --text-2: #a3898a;
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.55);
+  --shadow-card: 0 14px 30px rgba(194,67,74,0.2), 0 6px 16px rgba(0,0,0,0.45);
+  /* Alias semantique : le "trait d'encre" du signature visuel stamp/sticker
+     (bordure epaisse + ombre portee dure). Suit --text-0, donc s'inverse tout
+     seul entre theme sombre (creme) et clair (quasi-noir). */
+  --ink: var(--text-0);
+  font-size: 16px;
+}
+
+[data-theme="light"] {
+  --bg-0: #f5f0ee;
+  --bg-1: #ffffff;
+  --bg-2: #ece3e0;
+  --surface: #ffffff;
+  --surface-2: #f2e9e6;
+  --pink: #b03a40;
+  --pink-2: #d97b74;
+  --gold: #a67a35;
+  --cyan: #4d478f;
+  --violet: #5c4696;
+  --green: #3d8a5c;
+  --red: #b8514e;
+  --text-0: #211417;
+  --text-1: #4a3a3a;
+  --text-2: #7a6664;
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.12);
+  --shadow-card: 0 14px 30px rgba(176,58,64,0.12), 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* Mode daltonien : remplace les paires vert/rouge par une palette bleu/orange
+   distinguable en deuteranopie/protanopie, en plus des indices deja non-couleur
+   (hauteur des barres wifi, icone cadenas des succes, etc.). */
+body.colorblind-mode {
+  --green: #0072B2;
+  --red: #E69F00;
+}
+body.colorblind-mode .wifi-good .wifi-bar-1,
+body.colorblind-mode .wifi-good .wifi-bar-2,
+body.colorblind-mode .wifi-good .wifi-bar-3 { background: #0072B2; }
+body.colorblind-mode .wifi-bad .wifi-bar-1,
+body.colorblind-mode .wifi-offline .wifi-bar-1,
+body.colorblind-mode .wifi-offline .wifi-bar-2,
+body.colorblind-mode .wifi-offline .wifi-bar-3 { background: #E69F00; }
+body.colorblind-mode .friend-dot.friend-online { background: #0072B2; box-shadow: 0 0 6px #0072B2; }
+body.colorblind-mode .timer-ring-critical { border-top-color: #E69F00; }
+
+/* Le theme clair inverse la logique "blanc transparent" utilisee un peu partout
+   en mode sombre (bordures/fonds translucides quasi invisibles sur fond clair). */
+[data-theme="light"] .btn-ghost { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .mini-scoreboard-bar,
+[data-theme="light"] .toggle,
+[data-theme="light"] .account-stat,
+[data-theme="light"] .achievement-badge.achievement-locked,
+[data-theme="light"] .friend-row,
+[data-theme="light"] .chip { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+/* ===== Inclinaison 3D au survol (Vanilla-Tilt, cf. initSignatureTilt) =====
+   Volontairement limitee aux CTA d'accueil + a la carte gagnante : un seul
+   moment fort plutot qu'un tilt generalise sur chaque petite carte. */
+.btn-primary.btn-lg, .btn-secondary.btn-lg, .card-face.card-winner {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+[data-theme="light"] #sound-toggle,
+[data-theme="light"] #theme-toggle,
+[data-theme="light"] #colorblind-toggle,
+[data-theme="light"] #font-size-toggle { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.12); }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: 'Epilogue', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Anton reserve aux moments-choc (accueil, victoire, decompte) : condense et
+   tres charge visuellement, illisible en usage courant sur des titres d'ecran
+   normaux ("Ton pseudo", "Parametres"...). Epilogue Bold porte le reste. */
+h1, .logo-title, .celebrate, .countdown-huge, .champion-tag, .victory-screen h1 {
+  font-family: 'Anton', 'Epilogue', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+h2, h3, .game-code, .lobby-code, .judge-name,
+.point-badge, .timer-ring span, .card-text, .btn {
+  font-family: 'Epilogue', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+}
+.game-code, .lobby-code {
+  font-family: 'JetBrains Mono', 'Epilogue', monospace;
+  font-weight: 700;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button, input {
+  font-family: inherit;
+}
+
+#bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(60% 50% at 15% 0%, rgba(194,67,74,0.25), transparent 60%),
+    radial-gradient(50% 45% at 100% 10%, rgba(92,86,176,0.18), transparent 60%),
+    radial-gradient(60% 60% at 50% 120%, rgba(110,84,173,0.22), transparent 60%),
+    linear-gradient(160deg, var(--bg-0), var(--bg-1) 45%, var(--bg-2));
+}
+
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ===== Top bar ===== */
+#top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* env(...) tombe a 0 sur desktop (pas d'encoche), donc le fallback ne suffit
+     jamais a lui seul : on ajoute toujours une marge fixe pour ne pas coller
+     les boutons a la barre systeme, notch ou pas. */
+  padding: calc(env(safe-area-inset-top, 0px) + 22px) 16px 10px;
+  min-height: 44px;
+  width: 100%;
+}
+#top-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.top-bar-code-block { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.top-bar-code-block[hidden] { display: none; }
+.top-bar-code-label { color: var(--text-2); font-weight: 700; font-size: 0.78rem; white-space: nowrap; }
+.top-bar-code-value { font-weight: 800; letter-spacing: 2px; color: var(--text-0); font-size: 0.85rem; white-space: nowrap; }
+.top-bar-code-block .btn-copy-code { padding: 4px 8px; min-height: 28px; font-size: 0.85rem; flex-shrink: 0; }
+#top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#game-menu-toggle {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-0);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+#game-menu-toggle:active { transform: scale(0.92); }
+[data-theme="light"] #game-menu-toggle { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.12); }
+.game-menu-panel {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 60px);
+  left: 16px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+  min-width: 220px;
+  animation: menu-pop-in 0.15s ease-out both;
+}
+.game-menu-panel[hidden] { display: none; }
+@keyframes menu-pop-in { from { opacity: 0; transform: translateY(-6px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.game-menu-item {
+  background: none;
+  border: none;
+  color: var(--text-0);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  width: 100%;
+}
+.game-menu-item:hover, .game-menu-item:focus-visible { background: rgba(255,255,255,0.08); }
+[data-theme="light"] .game-menu-item:hover, [data-theme="light"] .game-menu-item:focus-visible { background: rgba(0,0,0,0.06); }
+
+#sound-toggle, #theme-toggle, #font-size-toggle {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-0);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+#font-size-toggle { font-size: 0.75rem; font-weight: 800; }
+#sound-toggle:active, #theme-toggle:active { transform: scale(0.92); }
+#theme-toggle.active { border-color: var(--pink); box-shadow: 0 0 0 2px rgba(194,67,74,0.25); }
+
+.logo-home-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 0;
+  border-radius: 10px;
+}
+.logo-home-btn img { height: 32px; width: auto; display: block; border-radius: 8px; }
+.logo-home-btn:active { transform: scale(0.94); }
+.logo-home-btn:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+/* ===== Indicateur wifi ===== */
+.wifi-indicator {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  /* Doit toujours contenir la plus haute barre (14px) + marge, sinon la 3e
+     barre depasse le cadre du bouton en "bonne connexion". */
+  height: 28px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+.wifi-bar {
+  display: block;
+  width: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.18);
+  transition: background 0.25s ease;
+}
+.wifi-bar-1 { height: 6px; }
+.wifi-bar-2 { height: 10px; }
+.wifi-bar-3 { height: 14px; }
+
+.wifi-good .wifi-bar-1,
+.wifi-good .wifi-bar-2,
+.wifi-good .wifi-bar-3 { background: var(--green); }
+
+.wifi-medium .wifi-bar-1,
+.wifi-medium .wifi-bar-2 { background: var(--gold); }
+.wifi-medium .wifi-bar-3 { background: rgba(255,255,255,0.18); }
+
+.wifi-bad .wifi-bar-1 { background: var(--red); }
+.wifi-bad .wifi-bar-2,
+.wifi-bad .wifi-bar-3 { background: rgba(255,255,255,0.18); }
+
+.wifi-offline .wifi-bar-1,
+.wifi-offline .wifi-bar-2,
+.wifi-offline .wifi-bar-3 { background: rgba(255,92,92,0.35); }
+
+/* Etat transitoire (page tout juste chargee, avant la 1ere mesure reelle) :
+   neutre, pas rouge — ce n'est pas une mauvaise connexion, juste pas encore su. */
+.wifi-pending .wifi-bar-1,
+.wifi-pending .wifi-bar-2,
+.wifi-pending .wifi-bar-3 { background: rgba(255,255,255,0.18); animation: wifi-pending-pulse 1.2s ease-in-out infinite; }
+.wifi-pending .wifi-bar-2 { animation-delay: 0.15s; }
+.wifi-pending .wifi-bar-3 { animation-delay: 0.3s; }
+@keyframes wifi-pending-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.9; } }
+
+.wifi-wrap { position: relative; }
+.wifi-indicator { cursor: pointer; font-family: inherit; appearance: none; margin: 0; color: inherit; }
+.wifi-score {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-left: 2px;
+  white-space: nowrap;
+}
+.wifi-good .wifi-score { color: var(--green); }
+.wifi-medium .wifi-score { color: var(--gold); }
+.wifi-bad .wifi-score, .wifi-offline .wifi-score { color: var(--red); }
+
+/* Panneau detaille : au tap (mobile compris, pas besoin de survol souris). */
+.wifi-detail-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 500;
+  width: 190px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+  animation: menu-pop-in 0.15s ease-out both;
+}
+.wifi-detail-panel[hidden] { display: none; }
+.wifi-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-0);
+  margin-bottom: 8px;
+}
+.wifi-detail-score { font-weight: 800; color: var(--gold); }
+.wifi-graph {
+  width: 100%;
+  height: 40px;
+  display: block;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm);
+}
+[data-theme="light"] .wifi-graph { background: rgba(0,0,0,0.04); }
+.wifi-graph polyline {
+  fill: none;
+  stroke: var(--pink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.wifi-detail-ms { text-align: center; margin-top: 6px; font-size: 0.75rem; color: var(--text-2); font-weight: 700; }
+
+/* ===== Ecran de chargement (accueil uniquement, jamais repris en jeu) ===== */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: var(--bg-0);
+  transition: opacity 0.4s ease;
+}
+#loading-screen.loading-screen-hidden { opacity: 0; pointer-events: none; }
+#loading-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  box-shadow: var(--shadow-lg);
+  animation: loading-logo-pulse 1.6s ease-in-out infinite;
+}
+@keyframes loading-logo-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.loading-bar-track {
+  width: min(220px, 70vw);
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+[data-theme="light"] .loading-bar-track { background: rgba(0,0,0,0.08); }
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pink), var(--gold));
+  transition: width 0.25s ease-out;
+}
+.loading-text { color: var(--text-2); font-weight: 700; font-size: 0.85rem; }
+/* Marqueur de diagnostic (horodatage du serveur reellement atteint) : discret
+   mais toujours lisible, sur le loading screen et en pied d'accueil, pour
+   confirmer d'un coup d'oeil qu'on ne regarde pas une version en cache. */
+.server-version-tag { color: var(--text-2); font-size: 0.7rem; opacity: 0.6; margin-top: 4px; }
+
+/* ===== App shell ===== */
+#app {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 18px calc(env(safe-area-inset-bottom, 12px) + 24px);
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: screen-in 0.35s ease both;
+}
+.center-screen {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1, h2, h3 { margin: 6px 0; }
+h2 { font-size: 1.4rem; font-weight: 800; }
+h3 { font-size: 1.05rem; color: var(--text-1); margin-top: 18px; }
+p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
+.hint { font-size: 0.9rem; color: var(--text-2); }
+
+/* ===== Boutons ===== */
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 22px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  min-height: 52px;
+  touch-action: manipulation;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-lg { font-size: 1.1rem; padding: 16px 24px; }
+
+/* Signature visuelle de l'appli : traitement "carte tamponnee" (bordure
+   d'encre epaisse + ombre portee dure, sans flou, decalee) sur les CTA
+   principaux et sur les cartes de jeu. Un aplat franc plutot qu'un degrade
+   neon-glow, et un vrai relief mecanique au clic plutot qu'un simple scale. */
+.btn-primary, .btn-secondary, .btn-danger {
+  border-radius: var(--radius-md);
+  border: 3px solid var(--ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease;
+}
+.btn-primary:active, .btn-secondary:active, .btn-danger:active {
+  transform: translate(4px, 4px);
+}
+.btn-primary {
+  background: var(--pink);
+  color: #fff6f2;
+  box-shadow: 5px 5px 0 var(--gold);
+}
+.btn-primary:active { box-shadow: 1px 1px 0 var(--gold); }
+.btn-secondary {
+  background: var(--cyan);
+  color: #f7f0ee;
+  box-shadow: 5px 5px 0 var(--pink);
+}
+.btn-secondary:active { box-shadow: 1px 1px 0 var(--pink); }
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-0);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn-ghost:active { transform: scale(0.96); }
+.btn-danger {
+  background: var(--red);
+  color: #2b0505;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.btn-danger:active { box-shadow: 1px 1px 0 var(--ink); }
+.btn-choice {
+  width: auto;
+  min-width: 64px;
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.btn-choice:not(:disabled):hover { border-color: var(--pink); }
+.btn-back {
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 0;
+  width: auto;
+  text-align: center;
+}
+
+/* ===== Champs ===== */
+.text-input {
+  width: 100%;
+  max-width: 320px;
+  padding: 15px 18px;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255,255,255,0.1);
+  background: var(--surface);
+  color: var(--text-0);
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+}
+.text-input:focus { border-color: var(--pink); }
+.code-input { letter-spacing: 6px; text-transform: uppercase; font-weight: 800; }
+.field-status { min-height: 20px; font-size: 0.85rem; font-weight: 700; }
+.field-ok { color: var(--green); }
+.field-error { color: var(--red); }
+
+.password-field-wrap { position: relative; width: 100%; max-width: 320px; }
+.password-field-wrap .text-input { max-width: none; padding-right: 46px; }
+.password-toggle-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  color: var(--text-1);
+}
+.password-toggle-btn:active { transform: translateY(-50%) scale(0.9); }
+
+/* ===== Accueil ===== */
+.home-screen { position: relative; gap: 20px; }
+.home-cards-fx { position: absolute; inset: 0; pointer-events: none; }
+.floating-card { position: absolute; font-size: 2.4rem; opacity: 0.35; animation: floaty 6s ease-in-out infinite; }
+.fc1 { top: 6%; left: 8%; animation-delay: 0s; }
+.fc2 { top: 60%; right: 6%; animation-delay: 1.2s; }
+.fc3 { bottom: 8%; left: 20%; animation-delay: 2.4s; }
+@keyframes floaty { 0%,100% { transform: translateY(0) rotate(-6deg);} 50% { transform: translateY(-18px) rotate(6deg);} }
+
+.logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.logo-image {
+  width: min(74vw, 300px);
+  height: auto;
+  filter: drop-shadow(0 14px 26px rgba(194,67,74,0.45));
+  animation: logo-pop 0.6s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes logo-pop { from { transform: scale(0.4) rotate(-8deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.tagline { font-weight: 700; font-size: 1.05rem; color: var(--text-1); max-width: 320px; }
+.fun-disclaimer {
+  max-width: 380px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+.home-actions { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 340px; margin-top: 10px; }
+
+/* ===== Avatar grid ===== */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  max-width: 360px;
+  margin: 10px 0 18px;
+}
+.avatar-btn {
+  aspect-ratio: 1;
+  font-size: 1.9rem;
+  background: radial-gradient(circle at 35% 30%, var(--surface-2), var(--surface));
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  cursor: pointer;
+  min-height: 54px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s ease, border-color 0.15s ease;
+  animation: sticker-in 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  animation-delay: calc(var(--i, 0) * 18ms);
+}
+.avatar-btn:active { transform: scale(0.88) rotate(-4deg); }
+.avatar-selected {
+  border-color: var(--gold);
+  background: radial-gradient(circle at 35% 30%, rgba(204,154,74,0.35), rgba(194,67,74,0.18));
+  box-shadow: 0 0 0 3px rgba(204,154,74,0.35), 0 10px 22px rgba(194,67,74,0.35);
+  transform: scale(1.08);
+}
+@keyframes sticker-in { from { opacity: 0; transform: scale(0.3) rotate(-20deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+
+/* ===== Toggles / settings ===== */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 360px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  margin: 6px 0;
+  font-weight: 700;
+}
+.setting-disabled { opacity: 0.45; }
+.public-games-list { list-style: none; padding: 0; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.public-game-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+.public-game-info { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.public-game-code { font-weight: 900; letter-spacing: 2px; color: var(--gold); }
+.public-game-count { font-size: 0.8rem; color: var(--text-2); }
+.public-game-row .btn { width: auto; padding: 10px 18px; min-height: 40px; }
+
+.pack-count {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-2);
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.toggle {
+  width: 54px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s ease;
+}
+.toggle-on { background: linear-gradient(135deg, var(--pink), var(--gold)); }
+.toggle-on .toggle-knob { transform: translateX(24px); }
+
+.setting-block { width: 100%; max-width: 360px; margin: 10px 0; text-align: center; }
+.setting-label { display: block; font-weight: 700; margin-bottom: 8px; }
+.range-input { width: 100%; accent-color: var(--pink); height: 30px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid transparent;
+  color: var(--text-1);
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 40px;
+}
+.chip-active { border-color: var(--gold); color: var(--gold); background: rgba(204,154,74,0.12); }
+
+/* ===== Code reveal ===== */
+.code-reveal-screen { gap: 16px; }
+.celebrate { animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+.game-code {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 10px;
+  background: linear-gradient(135deg, var(--pink), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pop-in 0.5s 0.1s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ===== Lobby ===== */
+.lobby-screen { gap: 10px; }
+.lobby-header { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 10px; }
+.lobby-code-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.lobby-code-label { color: var(--text-2); font-weight: 700; }
+.lobby-code { font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; color: var(--gold); }
+.btn-copy-code {
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 36px;
+}
+.btn-copy-code:active { transform: scale(0.94); }
+.lobby-count { color: var(--text-2); font-weight: 700; }
+
+.player-list { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 8px; }
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  animation: player-in 0.35s ease both;
+}
+@keyframes player-in { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+.player-offline { opacity: 0.4; }
+.player-avatar { font-size: 1.4rem; }
+.player-name { flex: 1; text-align: center; font-weight: 700; }
+.spectator-tag { display: inline-block; margin-left: 6px; font-size: 0.72rem; font-weight: 700; color: var(--cyan); background: rgba(92,86,176,0.12); border-radius: 999px; padding: 2px 8px; vertical-align: middle; }
+.player-score { font-weight: 900; color: var(--gold); min-width: 24px; text-align: right; }
+.btn-kick {
+  background: rgba(255,92,92,0.15);
+  color: var(--red);
+  border: none;
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.settings-panel { background: var(--surface); border-radius: var(--radius-md); padding: 12px; margin-top: 10px; }
+.settings-panel .setting-row, .settings-panel .setting-block { max-width: none; background: transparent; padding: 10px 4px; margin: 0; }
+
+.lobby-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.waiting-hint { text-align: center; }
+
+/* ===== Tirage du juge ===== */
+.dice-emoji, .crown-emoji, .drum-emoji, .confetti-emoji { font-size: 2.6rem; animation: shake 0.6s ease infinite; }
+@keyframes shake { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+.countdown-huge {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(204,154,74,0.5);
+}
+.judge-reveal { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: pop-in 0.4s cubic-bezier(.34,1.56,.64,1) both; }
+.judge-avatar { font-size: 3.2rem; }
+.judge-avatar-sm { font-size: 2rem; }
+.judge-avatar-xl { font-size: 5rem; }
+.judge-name { font-size: 1.6rem; font-weight: 900; }
+.judge-sub { color: var(--pink-2); font-weight: 800; }
+
+/* ===== Cartes ===== */
+.card-face {
+  width: 100%;
+  max-width: 340px;
+  min-height: 160px;
+  background: linear-gradient(155deg, var(--surface-2), var(--surface));
+  border-radius: var(--radius-lg);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.35), 0 14px 30px rgba(0,0,0,0.35);
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 14px auto;
+  animation: card-flip-in 0.5s cubic-bezier(.34,1.2,.64,1) both;
+}
+/* perspective() est integre a la fonction transform (comme card-winner-flip
+   plus bas), pas pose en propriete CSS separee (perspective + transform-style:
+   preserve-3d sur l'element anime lui-meme) : cette derniere combinaison cree
+   un contexte de composition 3D fragile ou, dans certains cas, le texte de la
+   carte reste dans le DOM (contenu, couleur, taille tous corrects) mais
+   n'est jamais peint a l'ecran — carte visuellement vide en permanence,
+   observe sur l'ecran JUDGING (carte format large). */
+@keyframes card-flip-in {
+  from { transform: perspective(800px) rotateY(-90deg) scale(0.9); opacity: 0; }
+  to { transform: perspective(800px) rotateY(0) scale(1); opacity: 1; }
+}
+.card-face.card-winner {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(204,154,74,0.35), 0 16px 34px rgba(204,154,74,0.25);
+  background: linear-gradient(155deg, #241a05, #2a1b45);
+  animation: card-winner-flip 0.6s cubic-bezier(.22,.68,.36,1) both;
+}
+@keyframes card-winner-flip {
+  0% { transform: perspective(900px) rotateY(-120deg) translateZ(-40px) scale(0.82); opacity: 0; }
+  70% { transform: perspective(900px) rotateY(8deg) translateZ(0) scale(1.015); opacity: 1; }
+  100% { transform: perspective(900px) rotateY(0) translateZ(0) scale(1); opacity: 1; }
+}
+.card-face-lg { min-height: 220px; }
+.card-face-sm { min-height: 120px; padding: 16px; }
+.card-face-md { min-height: 180px; }
+.card-black { background: linear-gradient(155deg, #140a0a, #1e1113); border-color: rgba(194,67,74,0.25); }
+/* .card-black et .card-face.card-winner ont un fond toujours sombre, quel que
+   soit le theme (vraie carte noire physique) : leur texte doit rester fixe,
+   pas suivre --text-0 (sinon illisible en theme clair). */
+.card-black .card-text, .card-face.card-winner .card-text { color: #f7f0ee; }
+.card-text {
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.blank-slot {
+  display: inline-block;
+  min-width: 60px;
+  border-bottom: 3px solid var(--pink);
+  color: var(--text-2);
+  margin: 0 2px;
+}
+.blank-filled {
+  display: inline-block;
+  color: var(--gold);
+  font-weight: 900;
+  border-bottom: 3px solid var(--gold);
+  padding: 0 4px;
+  margin: 0 2px;
+}
+.trophy-mark { display: inline-block; font-size: 1.8rem; margin-top: 10px; }
+
+.blank-choice-row { display: flex; gap: 12px; justify-content: center; margin: 12px 0 20px; }
+
+.pick-card-row { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 360px; margin-top: 10px; }
+
+/* ===== Reveal de carte : carte 3D sous spot, sans video =====
+   Une vraie carte (meme traitement "tamponnee" que le reste du jeu) posee sous
+   un spot qui respire, avec un leger flottement 3D permanent et un flip complet
+   a chaque nouvelle carte (tirage initial ou changement de nombre de trous). */
+.card-reveal-stage {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  min-height: 220px;
+  margin: 14px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+.card-reveal-spotlight {
+  position: absolute;
+  inset: -20px;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(204,154,74,0.22), transparent 65%);
+  animation: spotlight-breathe 3.4s ease-in-out infinite;
+}
+@keyframes spotlight-breathe {
+  0%, 100% { opacity: 0.6; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.card-reveal-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 220px;
+  border-radius: var(--radius-lg);
+  /* Toujours une carte noire, quel que soit le theme (comme .card-black) :
+     bordure et texte doivent donc rester fixes plutot que suivre --ink/--text-0,
+     sinon illisible (quasi-noir sur quasi-noir) en theme clair. */
+  background: linear-gradient(155deg, #140a0a, #1e1113);
+  border: 3px solid rgba(247,240,238,0.8);
+  box-shadow: 7px 7px 0 rgba(0,0,0,0.4), 0 20px 40px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transform-style: preserve-3d;
+  animation: card-idle-float 5s ease-in-out infinite;
+}
+@keyframes card-idle-float {
+  0%, 100% { transform: rotateY(-4deg) rotateX(2deg) translateY(0); }
+  50% { transform: rotateY(4deg) rotateX(-1deg) translateY(-6px); }
+}
+.card-reveal-card.card-reveal-flip { animation: card-reveal-flip-in 0.6s cubic-bezier(.22,.68,.36,1) both, card-idle-float 5s ease-in-out 0.6s infinite; }
+@keyframes card-reveal-flip-in {
+  0% { transform: perspective(1000px) rotateY(-140deg) translateZ(-60px) scale(0.8); opacity: 0.3; }
+  70% { transform: perspective(1000px) rotateY(10deg) translateZ(0) scale(1.015); opacity: 1; }
+  100% { transform: perspective(1000px) rotateY(0) translateZ(0) scale(1); opacity: 1; }
+}
+.card-reveal-text {
+  font-family: 'Epilogue', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  line-height: 1.35;
+  color: #f7f0ee;
+  text-align: center;
+  white-space: pre-line;
+}
+.card-reveal-text::after {
+  content: '▌';
+  animation: caret-blink 0.8s step-end infinite;
+  opacity: 0.8;
+  color: var(--gold);
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .card-reveal-spotlight, .card-reveal-card { animation: none; }
+}
+
+.reroll-block { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 4px 0 8px; }
+.reroll-label { font-weight: 800; color: var(--text-1); }
+.reroll-row { display: flex; gap: 12px; justify-content: center; }
+.pick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: pick-card-in 0.55s cubic-bezier(.34,1.56,.64,1) both;
+  animation-delay: calc(var(--i, 0) * 150ms);
+}
+@keyframes pick-card-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.85) rotateZ(-3deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotateZ(0); }
+}
+.pick-card-face {
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pick-card:hover .pick-card-face {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(194,67,74,0.3), 0 6px 16px rgba(0,0,0,0.4);
+}
+.pick-card-btn { max-width: 320px; }
+
+.reaction-row { display: flex; gap: 16px; justify-content: center; margin: 4px 0 8px; }
+.btn-reaction {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 2px solid rgba(255,255,255,0.1);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), border-color 0.15s ease;
+}
+.btn-reaction:active { transform: scale(0.85); }
+.btn-reaction.reaction-active { border-color: var(--gold); transform: scale(1.12); background: rgba(204,154,74,0.15); }
+.card-face.card-liked { border-color: var(--green); box-shadow: 0 0 0 3px rgba(74,222,128,0.3), var(--shadow-card); }
+.card-face.card-disliked { border-color: var(--red); opacity: 0.75; }
+
+/* ===== Timers ===== */
+.timer-ring {
+  width: 74px; height: 74px;
+  border-radius: 50%;
+  border: 5px solid rgba(255,255,255,0.1);
+  border-top-color: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+  animation: spin 3s linear infinite;
+  margin: 6px auto;
+}
+.timer-ring span { display: inline-block; animation: unspin 3s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes unspin { to { transform: rotate(-360deg); } }
+.timer-low { color: var(--red); }
+
+/* ===== Reponses ===== */
+#answer-form { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.answer-field { display: flex; flex-direction: column; gap: 4px; text-align: center; align-items: center; }
+.answer-field label { font-weight: 800; color: var(--text-2); }
+.answer-input { text-align: center; max-width: none; }
+.char-counter { font-size: 0.78rem; color: var(--text-2); align-self: center; }
+
+/* ===== Jugement ===== */
+.judging-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; max-width: 360px; margin: 8px 0; }
+/* white-space:nowrap + flex-shrink:0 : sans ca, "1 / 2" se retrouve compresse
+   par les boutons PRECEDENT/SUIVANT sur les ecrans etroits et le "/" finit
+   par retourner a la ligne (rendu type "1" / "/" / "2" sur 3 lignes, illisible). */
+.judging-pos { font-weight: 800; color: var(--text-2); white-space: nowrap; flex-shrink: 0; }
+.judging-nav .btn { flex-shrink: 1; min-width: 0; }
+
+/* ===== Resultats ===== */
+.winner-reveal { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: pop-in 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+.winner-reveal-lg .judge-avatar-xl { animation: bounce-big 1s ease infinite; }
+@keyframes bounce-big { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+.point-badge {
+  background: linear-gradient(135deg, var(--gold), #d9a24a);
+  color: #2b1900;
+  font-weight: 900;
+  padding: 4px 14px;
+  border-radius: 999px;
+  animation: score-pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes score-pop { from { transform: scale(0); } to { transform: scale(1); } }
+.champion-tag { font-weight: 900; color: var(--gold); font-size: 1.1rem; margin-top: 6px; }
+
+.other-answers-list { list-style: none; padding: 0; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; }
+.other-answer { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 14px; text-align: center; }
+.other-answer-head { font-weight: 800; color: var(--text-2); margin-bottom: 4px; }
+.other-answer-text { color: var(--text-0); }
+
+.leaderboard-list { list-style: none; padding: 0; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; }
+.leaderboard-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-weight: 700;
+}
+.leaderboard-row .player-name { flex: 1; text-align: center; }
+
+.podium-row { display: flex; align-items: flex-end; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 18px 0; }
+.podium-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  animation: podium-in 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  animation-delay: calc(var(--i, 1) * 120ms);
+}
+@keyframes podium-in {
+  from { opacity: 0; transform: perspective(700px) translateY(28px) rotateX(18deg) scale(0.85); }
+  to { opacity: 1; transform: perspective(700px) translateY(0) rotateX(0) scale(1); }
+}
+.podium-empty { visibility: hidden; }
+.podium-avatar { font-size: 2rem; }
+.podium-medal { font-size: 1.3rem; }
+.podium-name { font-weight: 800; font-size: 0.85rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.podium-score { font-size: 0.75rem; color: var(--text-2); font-weight: 700; }
+.podium-bar { width: 100%; border-radius: 12px 12px 0 0; margin-top: 4px; }
+.podium-bar-1 { height: 110px; background: linear-gradient(180deg, #d9ad3f, #96700f); box-shadow: 0 0 24px rgba(204,154,74,0.5); }
+.podium-bar-2 { height: 78px; background: linear-gradient(180deg, #d8d8e0, #8a8a96); }
+.podium-bar-3 { height: 56px; background: linear-gradient(180deg, #d8935a, #8a5a30); }
+.podium-step-1 { order: 2; }
+.podium-step-2 { order: 1; }
+.podium-step-3 { order: 3; }
+
+.victory-screen h1 { font-size: 2.4rem; font-weight: 900; background: linear-gradient(135deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ===== Spinner / loading ===== */
+.spinner {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.12);
+  border-top-color: var(--pink);
+  animation: spin 0.8s linear infinite;
+}
+
+/* ===== Toasts ===== */
+#toast-root {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 16px);
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 200;
+  pointer-events: none;
+}
+.toast {
+  background: var(--surface-2);
+  color: var(--text-0);
+  padding: 12px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-lg);
+  font-weight: 700;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  max-width: 90vw;
+}
+.toast-error { background: #3a1420; color: #ffb3c0; border: 1px solid rgba(255,92,92,0.4); }
+.toast-show { opacity: 1; transform: translateY(0); }
+
+/* ===== Modale ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,3,12,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  padding: 20px;
+}
+.modal-show { opacity: 1; }
+.modal-box {
+  background: var(--surface-2);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.9);
+  transition: transform 0.2s ease;
+}
+.modal-show .modal-box { transform: scale(1); }
+.modal-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.modal-checkbox-row input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--pink); }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+.modal-actions .btn { width: auto; flex: 1; }
+
+/* ===== Confetti ===== */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 250;
+}
+
+/* ===== Accessibilite ===== */
+button:focus-visible, input:focus-visible, [role="switch"]:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 640px) {
+  #app { padding-top: 20px; }
+  .avatar-grid { grid-template-columns: repeat(6, 1fr); }
+}
+@media (max-width: 359px) {
+  .logo-title { font-size: 1.6rem; }
+  .game-code { font-size: 2.2rem; letter-spacing: 6px; }
+  .avatar-grid { gap: 6px; }
+}
+
+/* Barre du haut sur telephone (jusqu'a ~480px, couvre la plupart des mobiles
+   dont l'iPhone 13 a 390px) : logo + hamburger + code + 4-5 icones ne
+   tenaient pas sur une seule ligne a taille normale, les icones finissaient
+   par se chevaucher plutot que de rester lisibles. */
+@media (max-width: 480px) {
+  #top-bar { padding-left: 8px; padding-right: 8px; gap: 2px; }
+  #top-bar-left, #top-bar-right { gap: 3px; }
+  .logo-home-btn img { height: 24px; }
+  #game-menu-toggle { width: 28px; height: 28px; font-size: 0.85rem; }
+  #sound-toggle, #theme-toggle, #font-size-toggle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  #font-size-toggle { font-size: 0.6rem; }
+  .wifi-indicator { padding: 2px 5px; height: 22px; gap: 2px; }
+  .wifi-bar { width: 3px; }
+  .wifi-score { font-size: 0.5rem; }
+  /* Le libelle "Code :" prend de la place utile a rien en jeu sur petit
+     ecran : le code lui-meme (les vraies infos) reste, le mot disparait. */
+  .top-bar-code-label { display: none; }
+  .top-bar-code-value { font-size: 0.7rem; letter-spacing: 0.5px; }
+  .top-bar-code-block { gap: 3px; }
+  .top-bar-code-block .btn-copy-code { padding: 2px 5px; min-height: 22px; font-size: 0.7rem; }
+}
+/* En dessous de 400px, l'icone taille de texte (Aa) est la moins prioritaire
+   des 4 a droite : la barre reste illisible/collee meme apres la reduction
+   ci-dessus si on garde les 4. On la masque, elle reste accessible en
+   desktop/tablette ou la place ne manque pas. */
+@media (max-width: 400px) {
+  #font-size-toggle { display: none; }
+}
+
+/* ===== Tablette / desktop : plus d'air, mise en page elargie ===== */
+@media (min-width: 768px) {
+  #app { max-width: 680px; }
+  .avatar-grid { grid-template-columns: repeat(8, 1fr); max-width: 480px; }
+  .pick-card-row { max-width: 480px; }
+  .card-face-lg { max-width: 460px; }
+
+  .lobby-screen {
+    max-width: 680px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "header header"
+      "players settings"
+      "actions actions";
+    column-gap: 24px;
+  }
+  .lobby-header { grid-area: header; }
+  .player-list { grid-area: players; align-self: start; }
+  .settings-panel { grid-area: settings; align-self: start; }
+  .lobby-actions { grid-area: actions; max-width: 340px; margin: 20px auto 0; }
+}
+
+/* ===== Paysage sur mobile (hauteur reduite) : on resserre verticalement ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+  #top-bar { padding-top: 4px; padding-bottom: 4px; min-height: 32px; }
+  .logo-image { width: min(30vh, 180px); }
+  .home-screen { gap: 8px; }
+  .tagline { font-size: 0.85rem; }
+  .screen { justify-content: flex-start; padding-top: 6px; }
+  .card-face { min-height: 100px; padding: 14px; margin: 8px auto; }
+  .card-face-lg { min-height: 130px; }
+  .countdown-huge { font-size: 3rem; }
+  .avatar-grid { grid-template-columns: repeat(10, 1fr); max-width: 640px; }
+  .chat-panel { height: min(320px, 70vh); }
+}
+
+/* ===== Section regles (page d'accueil) ===== */
+.rules-section {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.rules-title { font-size: 1.3rem; }
+.rule-step {
+  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 22px;
+  box-shadow: var(--shadow-card);
+}
+.rule-screenshot { width: 100%; height: auto; display: block; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.rule-step-body { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; text-align: left; }
+.rule-step-num {
+  flex-shrink: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--gold));
+  color: #1a0a05;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rule-step-title { margin: 2px 0 4px; font-size: 1.05rem; }
+.rule-step-text { font-size: 0.9rem; margin: 0; }
+
+.rules-tips {
+  width: 100%;
+  background: var(--surface-2);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-top: 22px;
+  text-align: left;
+}
+.rules-tips h3 { margin-top: 0; }
+.rules-tips-list { margin: 8px 0 0; padding-left: 20px; color: var(--text-1); font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px; }
+
+/* ===== Chat ===== */
+#chat-root { position: fixed; inset: 0; pointer-events: none; z-index: 400; }
+.chat-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 18px);
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), #ff6a5a);
+  border: none;
+  font-size: 1.4rem;
+  box-shadow: 0 10px 24px rgba(194,67,74,0.45);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.chat-toggle:active { transform: scale(0.92); }
+.chat-unread-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--gold);
+  color: #2b1900;
+  font-size: 0.72rem;
+  font-weight: 900;
+  border-radius: 999px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+.chat-unread-badge[hidden] { display: none; }
+.chat-panel {
+  position: fixed;
+  right: 18px;
+  bottom: calc(env(safe-area-inset-bottom, 12px) + 84px);
+  width: min(340px, calc(100vw - 36px));
+  height: min(460px, 60vh);
+  background: var(--surface-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+  animation: pop-in 0.2s ease both;
+}
+.chat-panel[hidden] { display: none; }
+.chat-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.chat-tabs { display: flex; gap: 6px; overflow-x: auto; flex: 1; }
+.chat-tab {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-1);
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chat-tab-active { background: var(--pink); color: #fff6f2; }
+.chat-close { background: none; border: none; color: var(--text-2); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.chat-empty { color: var(--text-2); font-size: 0.85rem; text-align: center; }
+.chat-msg { background: var(--surface); border-radius: var(--radius-sm); padding: 8px 10px; max-width: 90%; }
+.chat-msg-own { align-self: flex-end; background: rgba(194,67,74,0.18); }
+.chat-msg-author { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-2); margin-bottom: 2px; }
+.chat-msg-text { font-size: 0.9rem; word-break: break-word; }
+.chat-msg-system {
+  align-self: center;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-style: italic;
+  text-align: center;
+  max-width: 100%;
+  padding: 4px 8px;
+}
+.chat-form { display: flex; gap: 6px; padding: 8px; border-top: 1px solid rgba(255,255,255,0.08); }
+.chat-input { flex: 1; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 8px 14px; color: var(--text-0); font-size: 0.9rem; outline: none; }
+.chat-input:focus { border-color: var(--pink); }
+.chat-send { background: var(--pink); color: #fff6f2; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 1rem; }
+
+/* ===== Bulle d'aide du tutoriel ===== */
+/* Reste en bas (lecture naturelle), mais body.tutorial-tip-active ajoute de la
+   place sous le contenu (voir #app plus bas) : sans ca la bulle finit par
+   recouvrir le CTA principal de l'ecran (VALIDER, ENVOYER, CHOISIR CETTE
+   REPONSE...), le rendant injoignable sans la fermer d'abord. */
+#tutorial-tip-root { position: fixed; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 12px) + 12px); z-index: 350; display: flex; justify-content: center; pointer-events: none; }
+body.tutorial-tip-active #app { padding-bottom: 130px; }
+/* Sur petit ecran le texte de la bulle wrap sur plus de lignes (largeur
+   dispo plus faible) : la marge fixe de 130px ne suffit plus, la bulle
+   remonte davantage et peut recouvrir visuellement le CTA en dessous. */
+@media (max-width: 420px) {
+  body.tutorial-tip-active #app { padding-bottom: 175px; }
+}
+/* Le mini-classement flottant (haut-gauche, position:fixed) peut recouvrir le
+   debut d'un titre centre assez large (ex: "CHOISIS LA MEILLEURE REPONSE")
+   puisqu'il n'appartient pas au flux normal de la page. On pousse le contenu
+   sous son empreinte plutot que de risquer un titre partiellement illisible. */
+body.scoreboard-active #app { padding-top: 200px; }
+/* #app est centre et plafonne a 560-680px : le chevauchement ne disparait
+   que quand (viewport - largeur #app) / 2 depasse la largeur du mini-
+   classement (~240px), donc pas avant une fenetre large (~1040px+). */
+@media (min-width: 1060px) { body.scoreboard-active #app { padding-top: 8px; } }
+.tutorial-tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+  max-width: 420px;
+  /* pointer-events reactive seulement sur le bouton fermer (ci-dessous), pas
+     ici : avec un texte long qui deborde du padding-bottom de #app reserve
+     pour la bulle, le corps du texte pouvait recouvrir et avaler les clics
+     du CTA principal en dessous (VALIDER, ENVOYER...). Le texte doit rester
+     traversable par la souris/le tactile, seul le X doit rester cliquable. */
+  pointer-events: none;
+  animation: menu-pop-in 0.2s ease-out both;
+}
+.tutorial-tip-icon { font-size: 1.3rem; flex-shrink: 0; }
+.tutorial-tip-text { flex: 1; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-0); }
+.tutorial-tip-close { background: none; border: none; color: var(--text-2); font-size: 1rem; cursor: pointer; flex-shrink: 0; padding: 4px; pointer-events: auto; }
+/* Petit ecran : texte wrap sur plus de lignes, la bulle grossit et
+   chevauche visuellement le CTA en dessous (clic non bloque, cf.
+   pointer-events ci-dessus, mais moche). On reduit taille/lignes. */
+@media (max-width: 420px) {
+  .tutorial-tip { padding: 8px 10px; gap: 6px; max-width: 92vw; }
+  .tutorial-tip-icon { font-size: 1.05rem; }
+  .tutorial-tip-text { font-size: 0.72rem; line-height: 1.25; }
+}
+
+/* ===== Mini-classement persistant ===== */
+/* top calcule pour tomber sous #top-bar quel que soit l'encoche (safe-area) :
+   le bloc passait auparavant SOUS la barre du haut sur mobile (chevauchement). */
+#scoreboard-root { position: fixed; left: 12px; top: calc(env(safe-area-inset-top, 0px) + 78px); z-index: 300; pointer-events: none; }
+.mini-scoreboard {
+  /* HUD toujours en verre sombre par-dessus le jeu, dans les deux themes : le
+     fond ne s'inverse jamais, donc le texte a l'interieur ne doit pas suivre
+     les tokens de theme (sinon texte sombre sur fond sombre en theme clair). */
+  background: rgba(27,19,21,0.9);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  width: 170px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  color: #f7f0ee;
+}
+.mini-scoreboard-goal { font-size: 0.72rem; font-weight: 800; color: rgba(247,240,238,0.75); margin-bottom: 6px; }
+.mini-scoreboard-bar { width: 100%; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.1); margin-top: 4px; overflow: hidden; }
+.mini-scoreboard-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--gold)); transition: width 0.4s ease; }
+.mini-scoreboard-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.mini-scoreboard-list li { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #f7f0ee; }
+.mini-scoreboard-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-scoreboard-score { font-weight: 800; color: var(--gold); }
+@media (max-width: 480px) { #scoreboard-root { left: 6px; top: calc(env(safe-area-inset-top, 0px) + 68px); } .mini-scoreboard { width: 140px; padding: 8px 10px; } }
+
+/* ===== Reactions rapides flottantes ===== */
+.reaction-bar { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.reaction-btn { background: var(--surface-2); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem; cursor: pointer; }
+.reaction-btn:active { transform: scale(0.85); }
+.floating-reaction {
+  position: fixed;
+  bottom: 100px;
+  font-size: 2.2rem;
+  z-index: 500;
+  pointer-events: none;
+  animation: float-reaction 2.2s ease-out forwards;
+}
+@keyframes float-reaction {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  15% { transform: translateY(-30px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(-260px) scale(1); opacity: 0; }
+}
+
+/* ===== Timer critique + checkmark reponse ===== */
+.timer-ring-critical { border-top-color: var(--red); animation: spin 3s linear infinite, timer-pulse 1s ease-in-out infinite; }
+@keyframes timer-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,92,92,0.4); } 50% { box-shadow: 0 0 0 8px rgba(255,92,92,0); } }
+.answering-progress { font-weight: 700; color: var(--text-1); }
+.answer-check { display: inline-block; animation: check-pop 0.4s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes check-pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* ===== Compte / succes / amis ===== */
+.account-level-block { width: 100%; max-width: 320px; margin: 6px 0 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.account-level-label { font-weight: 800; color: var(--gold); font-size: 0.9rem; }
+.account-level-block .mini-scoreboard-bar { width: 100%; height: 8px; }
+.account-stats-row { display: flex; gap: 10px; width: 100%; max-width: 360px; margin: 10px 0; }
+.account-stat { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
+.account-stat-num { font-size: 1.3rem; font-weight: 800; color: var(--text-1); }
+.achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; width: 100%; max-width: 420px; margin-bottom: 10px; }
+.achievement-badge { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 12px; text-align: center; }
+/* Un succes debloque = tampon officiel : bordure d'encre + ombre doree dure,
+   legerement de travers comme un badge colle a la main dans un scrapbook. */
+.achievement-badge.achievement-unlocked {
+  background: linear-gradient(160deg, rgba(204,154,74,0.22), rgba(194,67,74,0.12));
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--gold);
+  transform: rotate(-2deg);
+}
+.achievement-badge.achievement-unlocked:nth-child(even) { transform: rotate(2deg); }
+.achievement-badge.achievement-locked { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); opacity: 0.55; }
+.achievement-icon { font-size: 1.5rem; }
+.achievement-name { font-size: 0.68rem; font-weight: 700; color: var(--text-1); line-height: 1.15; }
+.friend-add-row { display: flex; gap: 8px; width: 100%; max-width: 360px; margin-bottom: 8px; }
+.friend-add-row .text-input { flex: 1; max-width: none; width: auto; }
+.friend-list { list-style: none; margin: 0 0 10px; padding: 0; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 6px; }
+.friend-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); }
+.friend-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.25); flex-shrink: 0; }
+.friend-dot.friend-online { background: #3ed67a; box-shadow: 0 0 6px #3ed67a; }
+
+/* ===== PC uniquement (souris + grand ecran) =====
+   L'appli est mobile-first : au clavier/souris sur grand ecran, rien ne
+   reagissait au survol (seulement :active, pense pour le tactile) et le
+   contenu restait fige a 680px de large au milieu d'un ecran vide. Ce bloc
+   n'affecte jamais le tactile grace a (hover: hover) and (pointer: fine). */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover, .btn-secondary:hover, .btn-danger:hover {
+    filter: brightness(1.08);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.06); }
+  [data-theme="light"] .btn-ghost:hover { background: rgba(0,0,0,0.05); }
+
+  #logo-home-btn:hover, #font-size-toggle:hover,
+  #theme-toggle:hover, #sound-toggle:hover, #game-menu-toggle:hover,
+  .wifi-indicator:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+  }
+
+  .avatar-btn:hover { transform: scale(1.08); background: rgba(255,255,255,0.08); }
+
+  .card-face:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 8px 0 rgba(0,0,0,0.3), var(--shadow-card);
+    cursor: pointer;
+  }
+
+  .player-row:hover { background: rgba(255,255,255,0.05); }
+  [data-theme="light"] .player-row:hover { background: rgba(0,0,0,0.04); }
+
+  .btn-copy-code:hover { filter: brightness(1.15); }
+
+  .reaction-btn:hover, .btn-reaction:hover { transform: scale(1.12); background: rgba(255,255,255,0.1); }
+}
+
+/* Grand ecran : le contenu ne doit pas rester fige a 680px au milieu d'un
+   ecran vide, sans pour autant s'etirer en pleine largeur (illisible). */
+@media (min-width: 1280px) {
+  #app { max-width: 860px; }
+  .lobby-screen { max-width: 860px; }
+}
+.friend-name { flex: 1; font-weight: 700; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ===== Lobby pratique (tutoriel/demo) ===== */
+.practice-banner {
+  background: rgba(204,154,74,0.12);
+  border: 1px solid rgba(204,154,74,0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  color: var(--text-1);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.practice-settings-summary {
+  list-style: none;
+  padding: 10px 14px;
+  margin: 0 0 10px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-1);
+  width: 100%;
+  max-width: 340px;
+}
+.practice-waiting { animation: wifi-pending-pulse 1.2s ease-in-out infinite; }
+.practice-role-row { justify-content: center; margin-bottom: 4px; }
+.practice-role-chip { font-size: 1rem; padding: 12px 20px; }
+
+.modal-info-body { text-align: left; }
+.modal-info-body p { margin: 0 0 10px; }
+.modal-info-body p:last-child { margin-bottom: 0; }
