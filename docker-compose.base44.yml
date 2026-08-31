@@ -1,0 +1,20 @@
+services:
+  app:
+    image: node:22-slim
+    working_dir: /app
+    # Bind-mount the cloned source so edits are reflected without rebuilding.
+    volumes:
+      # Bind-mount the cloned source so edits are reflected without rebuilding.
+      # The SQLite DB (data/app.db, gitignored) persists in the bind mount too.
+      - .:/app
+    ports:
+      - "3000:3000"
+    environment:
+      # Override the repo .env PORT so the app listens on 3000 (preview port).
+      - PORT=3000
+      # Let the app know the public preview suffix (used if needed at runtime).
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX:-}
+    # Install deps then start the server. No build step — vanilla JS frontend.
+    # node:sqlite is experimental in Node 22 but works without a flag.
+    command: sh -c "npm install --omit=dev && node server.js"
+    restart: unless-stopped
