@@ -48,7 +48,7 @@ function confirmModal({ title, body, confirmLabel, cancelLabel, danger, requireC
     overlay.innerHTML = `
       <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <h3 id="modal-title">${escapeHtmlClient(title)}</h3>
-        <p>${escapeHtmlClient(body)}</p>
+        <div class="modal-info-body"><p>${escapeHtmlClient(body)}</p></div>
         ${requireCheckbox ? `
           <label class="modal-checkbox-row">
             <input type="checkbox" id="modal-checkbox" />

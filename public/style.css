@@ -686,25 +686,32 @@ p { color: var(--text-1); line-height: 1.5; margin: 4px 0; }
 }
 .pack-desc { display: block; font-size: 0.72rem; font-weight: 400; color: var(--text-2); margin-top: 2px; }
 .toggle {
-  width: 54px;
-  height: 30px;
+  width: 50px;
+  height: 28px;
   border-radius: 999px;
   background: rgba(255,255,255,0.15);
-  border: none;
+  border: 2px solid rgba(255,255,255,0.12);
   position: relative;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
+  /* overflow:hidden = garde-fou : le rond ne peut jamais visuellement
+     deborder du contour arrondi, meme si un navigateur calcule le
+     positionnement un pixel de travers. */
+  overflow: hidden;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 .toggle-knob {
   position: absolute;
-  top: 3px; left: 3px;
-  width: 24px; height: 24px;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
   border-radius: 50%;
   background: white;
-  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1);
 }
-.toggle-on { background: linear-gradient(135deg, var(--pink), var(--gold)); }
-.toggle-on .toggle-knob { transform: translateX(24px); }
+.toggle-on { background: linear-gradient(135deg, var(--pink), var(--gold)); border-color: transparent; }
+.toggle-on .toggle-knob { transform: translateX(22px); }
 
 .setting-block { width: 100%; max-width: 360px; margin: 10px 0; text-align: center; }
 .setting-label { display: block; font-weight: 700; margin-bottom: 8px; }

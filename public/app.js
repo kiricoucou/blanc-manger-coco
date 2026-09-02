@@ -452,7 +452,7 @@ const Actions = {
     if (pack.ageRestricted) {
       const ok = await confirmModal({
         title: `${pack.emoji} ${pack.name}`,
-        body: "Ce pack contient des cartes vulgaires et à caractère explicite pour adultes (texte uniquement, aucune image). Aucune vérification d'identité n'est effectuée : en cochant la case ci-dessous, tu certifies sur l'honneur avoir 18 ans ou plus. En cas de fausse déclaration, l'application se dédouane de toute conséquence liée à cette affirmation. L'application décline par ailleurs toute responsabilité quant au contenu généré par les réponses des joueurs (voir la Charte d'utilisation).",
+        body: "Contenu réservé aux adultes (texte uniquement, aucune image). Aucune vérification d'identité : en cochant, tu certifies avoir 18 ans ou plus. Une fausse déclaration engage ta seule responsabilité.",
         confirmLabel: 'ACTIVER',
         cancelLabel: 'ANNULER',
         requireCheckbox: { label: "Je certifie avoir plus de 18 ans et j'accepte ce contenu." },
@@ -696,7 +696,7 @@ const Actions = {
       if (pack.ageRestricted) {
         const ok = await confirmModal({
           title: `${pack.emoji} ${pack.name}`,
-          body: "Ce pack contient des cartes vulgaires et à caractère explicite pour adultes. L'application décline toute responsabilité quant au contenu généré par les réponses des joueurs.",
+          body: "Contenu réservé aux adultes (texte uniquement, aucune image). Aucune vérification d'identité : en cochant, tu certifies avoir 18 ans ou plus. Une fausse déclaration engage ta seule responsabilité.",
           confirmLabel: 'ACTIVER',
           cancelLabel: 'ANNULER',
           requireCheckbox: { label: "Je certifie avoir plus de 18 ans et j'accepte ce contenu." },

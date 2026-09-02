@@ -91,7 +91,7 @@ function screenHome() {
 
     ${rulesSection()}
 
-    <p class="fun-disclaimer">🎉 On est ici pour rigoler ! L'humour peut être noir, ça reste un jeu entre vous : ce qui se dit dans la partie reste dans la partie. L'appli n'est pas responsable de ce qui déborderait en dehors. Amusez-vous bien ce soir 🥳 <a href="/legal.html#esprit" target="_blank" rel="noopener">Charte d'utilisation &amp; CGU</a></p>
+    <p class="fun-disclaimer">🎉 On est ici pour rigoler ! Cela reste un jeu à but humoristique : ce qui se dit dans la partie reste dans la partie. L'appli n'est pas responsable de ce qui déborderait en dehors. Amusez-vous bien ce soir 🥳 <a href="/legal.html#esprit" target="_blank" rel="noopener">Charte d'utilisation &amp; CGU</a></p>
   </div>`;
 }
 
